@@ -19,7 +19,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
+#include "string.h" // #include <string.h>
 
 #include <stdarg.h>
 
@@ -27,7 +27,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #else
-#include <unistd.h>
+#include "unistd.h" // #include <unistd.h>
 #endif
 
 #ifdef ORIGCODE

@@ -21,20 +21,8 @@
 #ifndef __DOOMTYPE__
 #define __DOOMTYPE__
 
-// #define macros to provide functions missing in Windows.
-// Outside Windows, we use strings.h for str[n]casecmp.
-
-
-#ifdef _WIN32
-
-#define strcasecmp _stricmp
-#define strncasecmp _strnicmp
-
-#else
-
-#include <strings.h>
-
-#endif
+#include "string.h"
+#include <stdbool.h> 
 
 
 //
@@ -70,12 +58,13 @@ typedef bool boolean;
 
 #else
 
-typedef enum 
-{
-    false	= 0,
-    true	= 1,
-	undef	= 0xFFFFFFFF
-} boolean;
+// typedef enum 
+// {
+//     false	= 0,
+//     true	= 1,
+// 	undef	= 0xFFFFFFFF
+// } boolean;
+typedef bool boolean;
 
 #endif
 

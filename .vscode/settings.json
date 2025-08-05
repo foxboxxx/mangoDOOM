@@ -1,0 +1,23 @@
+{
+    "files.associations": {
+        "*.common": "makefile",
+        "missing_lib.h": "c",
+        "doomdef.h": "c",
+        "doomfeatures.h": "c",
+        "malloc.h": "c",
+        "stddef.h": "c",
+        "unistd.h": "c",
+        "strings.h": "c",
+        "printf.h": "c",
+        "malloc_extension.h": "c",
+        "inttypes.h": "c",
+        "v_video.h": "c",
+        "doomtype.h": "c",
+        "f_wipe.h": "c",
+        "m_random.h": "c",
+        "z_zone.h": "c",
+        "config.h": "c",
+        "i_video.h": "c",
+        "strings_extension.h": "c"
+    }
+}

@@ -21,7 +21,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include "string.h" // #include <string.h>
 
 #include "d_player.h"
 #include "d_mode.h"

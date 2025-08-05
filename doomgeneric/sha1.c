@@ -31,8 +31,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <assert.h>
+#include "string.h" // #include <string.h>
+#include "assert.h" // #include <assert.h>
 
 #include "i_swap.h"
 #include "sha1.h"
