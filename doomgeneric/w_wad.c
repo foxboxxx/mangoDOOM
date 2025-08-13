@@ -129,7 +129,7 @@ static void ExtendLumpInfo(int newnumlumps)
 // LUMP BASED ROUTINES.
 //
 
-//
+
 // W_AddFile
 // All files are optional, but at least one file must be
 //  found (PWAD, if all required lumps are present).
@@ -239,8 +239,10 @@ wad_file_t *W_AddFile (char *filename)
 }
 
 wad_file_bm_t *W_AddFileAlt (const unsigned char *data, unsigned int length) {
-    // wad_file_bm_t *wad_file;
-    static wad_file_bm_t wad_file;
+        printf("W_AddFileAlt received pointer: %p\n", data);
+        printf("Size of filelump_t is: %d bytes\n", sizeof(filelump_t));
+    wad_file_bm_t *wad_file;
+    // static wad_file_bm_t wad_file;
     wadinfo_t header;
     // lumpinfo_t *lump_p;
     lumpinfo_bm_t *lump_p;
@@ -249,11 +251,11 @@ wad_file_bm_t *W_AddFileAlt (const unsigned char *data, unsigned int length) {
     int startlump;
     int newnumlumps;
 
-    // wad_file = Z_Malloc(sizeof(wad_file_bm_t), PU_STATIC, 0);
-    wad_file.data = data;
-    wad_file.length = length;
+    wad_file = Z_Malloc(sizeof(wad_file_bm_t), PU_STATIC, 0);
+    wad_file->data = data;
+    wad_file->length = length;
 
-    memcpy(&header, wad_file.data, sizeof(header));
+    memcpy(&header, wad_file->data, sizeof(header));
 
     if (strncmp(header.identification, "IWAD", 4) != 0 &&
         strncmp(header.identification, "PWAD", 4) != 0)
@@ -270,7 +272,7 @@ wad_file_bm_t *W_AddFileAlt (const unsigned char *data, unsigned int length) {
     printf("Info table offsets: %ld\n", header.infotableofs);
 
     // Pointer to directory
-    fileinfo = (filelump_t *)(data + header.infotableofs);
+    fileinfo = (filelump_t *)(wad_file->data + header.infotableofs);
     printf("File info pointer %x\n", fileinfo);
 
     // Resize lumpinfo[] to fit all lumps
@@ -285,13 +287,13 @@ wad_file_bm_t *W_AddFileAlt (const unsigned char *data, unsigned int length) {
     lump_p = &lumpinfobm[startlump];
     for (i = 0; i < (unsigned)header.numlumps; ++i)
     {
-        lump_p->wad_file = &wad_file; 
+        lump_p->wad_file = wad_file; 
         lump_p->position = LONG(fileinfo[i].filepos);
         lump_p->size = LONG(fileinfo[i].size);
         lump_p->cache = NULL;
         // printf("Pre strncpy()\n");
         strncpy(lump_p->name, fileinfo[i].name, 8);
-        lump_p->name[8] = '\0';
+        // lump_p->name[8] = '\0';
         // printf("Post strncpy()\n");
         lump_p++;
         // printf("Added file %s with size %ld at position %ld\n", fileinfo[i].name, fileinfo[i].size, fileinfo[i].filepos);
@@ -307,7 +309,7 @@ wad_file_bm_t *W_AddFileAlt (const unsigned char *data, unsigned int length) {
 
     // Store base pointer somewhere so W_Read/W_CacheLumpNum can find data
 
-    return &wad_file; // No actual wad_file_t needed for memory WAD
+    return wad_file; // No actual wad_file_t needed for memory WAD
 }
 
 
@@ -347,7 +349,7 @@ int W_CheckNumForName (char* name)
         {
             if (!strncasecmp(lump_p->name, name, 8))
             {
-                printf("%s: Found %s at index %ld!\n", __FUNCTION__, name, lump_p - lumpinfobm);
+                // printf("%s: Found %s at index %ld!\n", __FUNCTION__, name, lump_p - lumpinfobm);
                 return lump_p - lumpinfobm;
             }
         }
@@ -370,7 +372,7 @@ int W_CheckNumForName (char* name)
     }
 
     // TFB. Not found.
-    // printf("%s: File `%s` not found :(\n", __FUNCTION__, name);
+    printf("%s: File `%s` not found :(\n", __FUNCTION__, name);
     return -1;
 }
 
@@ -385,9 +387,9 @@ int W_GetNumForName (char* name)
 {
     int	i;
 
-    printf("%s: Pre check for name\n", __FUNCTION__);
+    // printf("%s: Pre check for name\n", __FUNCTION__);
     i = W_CheckNumForName (name);
-    printf("%s: Post check for name\n", __FUNCTION__);
+    // printf("%s: Post check for name\n", __FUNCTION__);
 
     if (i < 0)
     {
@@ -470,7 +472,26 @@ void *W_CacheLumpNum(int lumpnum, int tag)
 
     lumpinfo_bm_t *lump = &lumpinfobm[lumpnum];
 
-    return (void *)(lump->wad_file + lump->position);
+    // printf("Pointer at 0x%x\n", lump->wad_file->data);
+
+    if (!lump->cache)
+    {
+        // lump->cache = lump->wad_file->data + lump->position;
+        lump->cache = (void*)(lump->wad_file->data + lump->position);
+    }
+
+    return lump->cache;
+
+    // if ((unsigned)lumpnum >= numlumps)
+    // {
+    //     I_Error("W_CacheLumpNum: %i >= numlumps", lumpnum);
+    // }
+
+    // lumpinfo_bm_t *lump = &lumpinfobm[lumpnum];
+
+    // return (void *)(lump->wad_file + lump->position);
+
+    //------------------------------------------------------//
 
     // byte *result;
     // lumpinfo_bm_t *lump;

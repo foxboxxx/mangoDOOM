@@ -2,6 +2,7 @@
 #include "strings.h"
 #include "printf.h"
 #include "malloc.h"
+#include "ctype.h"
 
 int strcasecmp(const char *s1, const char *s2) {
     while (*s1 && *s2) {
@@ -18,18 +19,19 @@ int strcasecmp(const char *s1, const char *s2) {
 }
 
 int strncasecmp(const char *s1, const char *s2, unsigned long n) {
-    while (*s1 && *s2 && n > 0) {
-        char c1 = *s1++;
-        char c2 = *s2++;
-        if ('A' <= c1 && c1 <= 'Z')
-            c1 += 'a' - 'A';
-        if ('A' <= c2 && c2 <= 'Z')
-            c2 += 'a' - 'A';
+    while (n > 0) {
+        char c1 = toupper((unsigned char)*s1++);
+        char c2 = toupper((unsigned char)*s2++);
+
         if (c1 != c2)
-            return (unsigned char)c1 - (unsigned char)c2;
+            return c1 - c2;
+
+        if (c1 == '\0')
+            return 0;
+
         n--;
     }
-    return (unsigned char)*s1 - (unsigned char)*s2;
+    return 0;
 }
 
 // #undef strncpy

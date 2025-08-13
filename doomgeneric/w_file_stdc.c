@@ -23,6 +23,7 @@
 #include "z_zone.h"
 
 #include "doom_wad.h"
+// #include "doom1_wad.h"
 
 typedef struct
 {

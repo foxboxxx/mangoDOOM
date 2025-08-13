@@ -56,7 +56,7 @@
 #include <CoreFoundation/CFUserNotification.h>
 #endif
 
-#define DEFAULT_RAM 6 /* MiB */
+#define DEFAULT_RAM 100 /* MiB */
 #define MIN_RAM     6  /* MiB */
 
 

@@ -473,8 +473,8 @@ void R_InitTextures (void)
     int			offset;
     int			maxoff;
     int			maxoff2;
-    int			numtextures1;
-    int			numtextures2;
+    int     	numtextures1;
+    int	    	numtextures2;
 
     int*		directory;
     
@@ -490,6 +490,7 @@ void R_InitTextures (void)
     printf("%s: Post cache lumps\n", __FUNCTION__);
     nummappatches = LONG ( *((int *)names) );
     name_p = names + 4;
+    printf("nummappatches: %d, name_p: %s\n", nummappatches, name_p);
     printf("%s: Pre Z_Malloc\n", __FUNCTION__);
     patchlookup = Z_Malloc(nummappatches*sizeof(*patchlookup), PU_STATIC, NULL);
     printf("%s: Post Z_Malloc\n", __FUNCTION__);
@@ -514,15 +515,15 @@ void R_InitTextures (void)
 	
     if (W_CheckNumForName (DEH_String("TEXTURE2")) != -1)
     {
-	maptex2 = W_CacheLumpName (DEH_String("TEXTURE2"), PU_STATIC);
-	numtextures2 = LONG(*maptex2);
-	maxoff2 = W_LumpLength (W_GetNumForName (DEH_String("TEXTURE2")));
+        maptex2 = W_CacheLumpName (DEH_String("TEXTURE2"), PU_STATIC);
+        numtextures2 = LONG(*maptex2);
+        maxoff2 = W_LumpLength (W_GetNumForName (DEH_String("TEXTURE2")));
     }
     else
     {
-	maptex2 = NULL;
-	numtextures2 = 0;
-	maxoff2 = 0;
+        maptex2 = NULL;
+        numtextures2 = 0;
+        maxoff2 = 0;
     }
     numtextures = numtextures1 + numtextures2;
 	
@@ -545,17 +546,31 @@ void R_InitTextures (void)
     // up the box" effect, which uses backspace to "step back" inside
     // the box.  If stdout is a file, don't draw the box.
 
+    // Not windows so doesn't matter - jmr
     // printf("%s: Pre IConsoleStdout()\n", __FUNCTION__);
-    if (I_ConsoleStdout())
-    {
-        printf("[");
-        for (i = 0; i < temp3 + 9; i++)
-            printf(" ");
-        printf("]");
-        for (i = 0; i < temp3 + 10; i++)
-            printf("\b");
-    }
-	// printf("%s: Pre for loop\n", __FUNCTION__);
+    // if (I_ConsoleStdout())
+    // {
+    //     printf("[");
+    //     for (i = 0; i < temp3 + 9; i++)
+    //         printf(" ");
+    //     printf("]");
+    //     for (i = 0; i < temp3 + 10; i++)
+    //         printf("\b");
+    // }
+
+    // debugging
+//     printf("TEXTURE1 lump size = %d\n", W_LumpLength(W_GetNumForName("TEXTURE1")));
+// printf("First 8 bytes: %02x %02x %02x %02x  %02x %02x %02x %02x\n",
+//     ((unsigned char*)maptex)[0], ((unsigned char*)maptex)[1],
+//     ((unsigned char*)maptex)[2], ((unsigned char*)maptex)[3],
+//     ((unsigned char*)maptex)[4], ((unsigned char*)maptex)[5],
+//     ((unsigned char*)maptex)[6], ((unsigned char*)maptex)[7]);
+//     int lumpnum = W_GetNumForName("TEXTURE1");
+// printf("TEXTURE1 lump number: %d\n", lumpnum);
+// printf("TEXTURE1 offset in WAD: %d\n", lumpinfobm[lumpnum].position);
+// printf("TEXTURE1 size in WAD: %d\n", lumpinfobm[lumpnum].size);
+
+	printf("%s: Pre for loop, %d numtextures, %d numtextures1, %d numtextures2\n", __FUNCTION__, numtextures, numtextures1, numtextures2);
     for (i=0 ; i<numtextures ; i++, directory++)
     {
 	if (!(i&63))
@@ -571,6 +586,7 @@ void R_InitTextures (void)
 		
 	offset = LONG(*directory);
 
+    // printf("%s: Loop iteration %d\n", __FUNCTION__, i);
 	if (offset > maxoff)
 	    I_Error ("R_InitTextures: bad texture directory");
 	
@@ -674,32 +690,31 @@ void R_InitSpriteLumps (void)
     spritetopoffset = Z_Malloc (numspritelumps*sizeof(*spritetopoffset), PU_STATIC, 0);
 	
     printf("%s: %d Num Sprite Lumps\n", __FUNCTION__, numspritelumps);
-    printf("firstspritelump=%d, lastspritelump=%d, numlumps=%d\n",
-       firstspritelump, lastspritelump, numlumps);
-    for (i=0 ; i< numspritelumps ; i++)
-    {
-	if (!(i&63))
-	    printf (".");
+    // printf("firstspritelump=%d, lastspritelump=%d, numlumps=%d\n",
+    //    firstspritelump, lastspritelump, numlumps);
+       for (i = 0; i < numspritelumps; i++) {
+           if (!(i & 63))
+               printf(".");
 
-        int lumpnum = firstspritelump + i;
-    printf("lumpnum=%d ", lumpnum);
+           int lumpnum = firstspritelump + i;
+           // printf("lumpnum=%d ", lumpnum);
 
-    if (lumpnum >= numlumps) {
-        printf("ERROR: lumpnum out of range!\n");
-        break;
-    }
+           if (lumpnum >= numlumps) {
+               printf("ERROR: lumpnum out of range!\n");
+               break;
+           }
 
-    printf("name=%s pos=%d size=%d\n",
-           lumpinfobm[lumpnum].name,
-           lumpinfobm[lumpnum].position,
-           lumpinfobm[lumpnum].size);
+           // printf("name=%s pos=%d size=%d\n",
+           //        lumpinfobm[lumpnum].name,
+           //        lumpinfobm[lumpnum].position,
+           //        lumpinfobm[lumpnum].size);
 
-    printf("%s: Pre CacheLumpNum() %d\n", __FUNCTION__, i);
-	patch = W_CacheLumpNum (firstspritelump+i, PU_CACHE);
-	spritewidth[i] = SHORT(patch->width)<<FRACBITS;
-	spriteoffset[i] = SHORT(patch->leftoffset)<<FRACBITS;
-	spritetopoffset[i] = SHORT(patch->topoffset)<<FRACBITS;
-    }
+        //    printf("%s: Pre CacheLumpNum() %d\n", __FUNCTION__, i);
+           patch = W_CacheLumpNum(firstspritelump + i, PU_CACHE);
+           spritewidth[i] = SHORT(patch->width) << FRACBITS;
+           spriteoffset[i] = SHORT(patch->leftoffset) << FRACBITS;
+           spritetopoffset[i] = SHORT(patch->topoffset) << FRACBITS;
+       }
 }
 
 

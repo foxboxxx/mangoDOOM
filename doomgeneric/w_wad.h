@@ -57,7 +57,7 @@ struct lumpinfo_bm_s
     wad_file_bm_t *wad_file;
     int		position;
     int		size;
-    void       *cache;
+    void*       cache;
 
     // Used for hash table lookups
 

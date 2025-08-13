@@ -848,8 +848,11 @@ P_SetupLevel
 void P_Init (void)
 {
     P_InitSwitchList ();
+    printf("P_InitSwitchList() completed!\n");
     P_InitPicAnims ();
+    printf("P_InitPicAnims() completed!\n");
     R_InitSprites (sprnames);
+    printf("R_InitSprites() completed!\n");
 }
 
 

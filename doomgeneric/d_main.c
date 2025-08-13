@@ -75,6 +75,8 @@
 #include "d_main.h"
 
 #include "doom_wad.h"
+// #include "doom1_wad.h"
+
 
 //
 // D-DoomLoop()
@@ -735,12 +737,12 @@ void D_IdentifyVersion(void)
 
         for (i=0; i<numlumps; ++i)
         {
-            if (!strncasecmp(lumpinfo[i].name, "MAP01", 8))
+            if (!strncasecmp(lumpinfobm[i].name, "MAP01", 8))
             {
                 gamemission = doom2;
                 break;
             } 
-            else if (!strncasecmp(lumpinfo[i].name, "E1M1", 8))
+            else if (!strncasecmp(lumpinfobm[i].name, "E1M1", 8))
             {
                 gamemission = doom;
                 break;
@@ -1386,6 +1388,7 @@ char file[256];
     modifiedgame = false;
 
     DEH_printf("W_Init: Init WADfiles.\n");
+    printf("Actual static WAD array is at: %p\n", DOOM_WAD);
     D_AddFile(iwadfile);
 
 #if ORIGCODE
@@ -1398,7 +1401,7 @@ char file[256];
     // we're playing and which version of Vanilla Doom we need to emulate.
     D_IdentifyVersion();
     InitGameVersion();
-    printf("after\n");
+    printf("Config: Post version print\n");
 
 #if ORIGCODE
     //!
@@ -1559,7 +1562,7 @@ char file[256];
     // Set the gamedescription string. This is only possible now that
     // we've finished loading Dehacked patches.
     D_SetGameDescription();
-    printf("description\n");
+    printf("Config: description\n");
 
 #ifdef _WIN32
     // In -cdrom mode, we write savegames to c:\doomdata as well as configs.
@@ -1788,13 +1791,13 @@ char file[256];
     M_Init (); // good
 
     DEH_printf("R_Init: Init DOOM refresh daemon - ");
-    R_Init ();
+    R_Init (); // good i think...
 
     DEH_printf("\nP_Init: Init Playloop state.\n");
     P_Init ();
 
     DEH_printf("S_Init: Setting up sound.\n");
-    // S_Init (sfxVolume * 8, musicVolume * 8);
+    S_Init (sfxVolume * 8, musicVolume * 8);
 
     DEH_printf("D_CheckNetGame: Checking network game status.\n");
     // D_CheckNetGame ();
