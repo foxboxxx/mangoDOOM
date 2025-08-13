@@ -728,7 +728,7 @@ void WritePNGfile(char *filename, byte *data,
     FILE *handle;
     int i;
 
-    handle = fopen(filename, "wb");
+   //IGNORE handle = fopen(filename, "wb");
     if (!handle)
     {
         return;

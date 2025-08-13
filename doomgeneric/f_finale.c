@@ -18,7 +18,7 @@
 
 
 #include <stdio.h>
-#include <ctype.h>
+#include "ctype.h"
 
 // Functions.
 #include "deh_main.h"

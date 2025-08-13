@@ -84,12 +84,18 @@ wad_file_t *W_OpenFile(char *path)
 
 void W_CloseFile(wad_file_t *wad)
 {
-    wad->file_class->CloseFile(wad);
+    // wad->file_class->CloseFile(wad);
 }
 
 size_t W_Read(wad_file_t *wad, unsigned int offset,
               void *buffer, size_t buffer_len)
 {
     return wad->file_class->Read(wad, offset, buffer, buffer_len);
+    return 0;
+}
+
+size_t W_Read_BM(wad_file_bm_t *wad, unsigned int offset, void *buffer, size_t buffer_len) {
+    memcpy(buffer, wad->data + offset, buffer_len);
+    return buffer_len;
 }
 

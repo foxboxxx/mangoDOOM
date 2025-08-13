@@ -18,6 +18,7 @@
 
 
 #include <stdio.h>
+#include <limits.h>
 
 #include "deh_main.h"
 
@@ -1003,7 +1004,7 @@ AM_drawFline
 	   || fl->b.x < 0 || fl->b.x >= f_w
 	   || fl->b.y < 0 || fl->b.y >= f_h)
     {
-        DEH_fprintf(stderr, "fuck %d \r", fuck++);
+        // DEH_fprintf(stderr, "fuck %d \r", fuck++);
 	return;
     }
 

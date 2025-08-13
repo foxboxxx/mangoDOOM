@@ -2,10 +2,10 @@
 
 #include "doomgeneric.h"
 
-#include <ctype.h>
+#include "ctype.h"
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
+// #include <unistd.h>
 #include <sys/time.h>
 
 #include <X11/Xlib.h>

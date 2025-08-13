@@ -485,17 +485,24 @@ void R_InitTextures (void)
     
     // Load the patch names from pnames.lmp.
     name[8] = 0;
+    printf("%s Pre cache lumps\n", __FUNCTION__);
     names = W_CacheLumpName (DEH_String("PNAMES"), PU_STATIC);
+    printf("%s: Post cache lumps\n", __FUNCTION__);
     nummappatches = LONG ( *((int *)names) );
     name_p = names + 4;
+    printf("%s: Pre Z_Malloc\n", __FUNCTION__);
     patchlookup = Z_Malloc(nummappatches*sizeof(*patchlookup), PU_STATIC, NULL);
+    printf("%s: Post Z_Malloc\n", __FUNCTION__);
 
     for (i = 0; i < nummappatches; i++)
     {
+        // printf("%s: Loop iteration %d\n", __FUNCTION__, i);
         M_StringCopy(name, name_p + i * 8, sizeof(name));
         patchlookup[i] = W_CheckNumForName(name);
     }
+    printf("%s: Pre ReleaseLumpName()\n", __FUNCTION__);
     W_ReleaseLumpName(DEH_String("PNAMES"));
+    printf("%s: Post ReleaseLumpName()\n", __FUNCTION__);
 
     // Load the map texture definitions from textures.lmp.
     // The data is contained in one or two lumps,
@@ -538,6 +545,7 @@ void R_InitTextures (void)
     // up the box" effect, which uses backspace to "step back" inside
     // the box.  If stdout is a file, don't draw the box.
 
+    // printf("%s: Pre IConsoleStdout()\n", __FUNCTION__);
     if (I_ConsoleStdout())
     {
         printf("[");
@@ -547,7 +555,7 @@ void R_InitTextures (void)
         for (i = 0; i < temp3 + 10; i++)
             printf("\b");
     }
-	
+	// printf("%s: Pre for loop\n", __FUNCTION__);
     for (i=0 ; i<numtextures ; i++, directory++)
     {
 	if (!(i&63))
@@ -665,11 +673,28 @@ void R_InitSpriteLumps (void)
     spriteoffset = Z_Malloc (numspritelumps*sizeof(*spriteoffset), PU_STATIC, 0);
     spritetopoffset = Z_Malloc (numspritelumps*sizeof(*spritetopoffset), PU_STATIC, 0);
 	
+    printf("%s: %d Num Sprite Lumps\n", __FUNCTION__, numspritelumps);
+    printf("firstspritelump=%d, lastspritelump=%d, numlumps=%d\n",
+       firstspritelump, lastspritelump, numlumps);
     for (i=0 ; i< numspritelumps ; i++)
     {
 	if (!(i&63))
 	    printf (".");
 
+        int lumpnum = firstspritelump + i;
+    printf("lumpnum=%d ", lumpnum);
+
+    if (lumpnum >= numlumps) {
+        printf("ERROR: lumpnum out of range!\n");
+        break;
+    }
+
+    printf("name=%s pos=%d size=%d\n",
+           lumpinfobm[lumpnum].name,
+           lumpinfobm[lumpnum].position,
+           lumpinfobm[lumpnum].size);
+
+    printf("%s: Pre CacheLumpNum() %d\n", __FUNCTION__, i);
 	patch = W_CacheLumpNum (firstspritelump+i, PU_CACHE);
 	spritewidth[i] = SHORT(patch->width)<<FRACBITS;
 	spriteoffset[i] = SHORT(patch->leftoffset)<<FRACBITS;
@@ -702,13 +727,14 @@ void R_InitColormaps (void)
 //
 void R_InitData (void)
 {
-    R_InitTextures ();
-    printf (".");
-    R_InitFlats ();
-    printf (".");
-    R_InitSpriteLumps ();
-    printf (".");
-    R_InitColormaps ();
+    R_InitTextures ();    // FIX
+    printf (". -- %s: R_INITTEXTURES()\n", __FUNCTION__);
+    R_InitFlats ();       // FIX
+    printf (". -- %s: R_INITFLATS()\n", __FUNCTION__);
+    R_InitSpriteLumps ();  // FIX
+    printf (". -- %s: R_INITSPRITELUMPS()\n", __FUNCTION__);
+    R_InitColormaps ();   // FIX
+    printf (". -- %s: R_INITCOLORMAPS()\n", __FUNCTION__);
 }
 
 
@@ -832,7 +858,7 @@ void R_PrecacheLevel (void)
 	if (flatpresent[i])
 	{
 	    lump = firstflat + i;
-	    flatmemory += lumpinfo[lump].size;
+	    flatmemory += lumpinfobm[lump].size;
 	    W_CacheLumpNum(lump, PU_CACHE);
 	}
     }
@@ -869,7 +895,7 @@ void R_PrecacheLevel (void)
 	for (j=0 ; j<texture->patchcount ; j++)
 	{
 	    lump = texture->patches[j].patch;
-	    texturememory += lumpinfo[lump].size;
+	    texturememory += lumpinfobm[lump].size;
 	    W_CacheLumpNum(lump , PU_CACHE);
 	}
     }
@@ -898,7 +924,7 @@ void R_PrecacheLevel (void)
 	    for (k=0 ; k<8 ; k++)
 	    {
 		lump = firstspritelump + sf->lump[k];
-		spritememory += lumpinfo[lump].size;
+		spritememory += lumpinfobm[lump].size;
 		W_CacheLumpNum(lump , PU_CACHE);
 	    }
 	}

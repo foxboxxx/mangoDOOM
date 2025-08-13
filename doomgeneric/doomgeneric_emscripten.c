@@ -5,7 +5,7 @@
 #include "doomgeneric.h"
 
 #include <stdio.h>
-#include <unistd.h>
+// #include <unistd.h>
 
 #include <stdbool.h>
 #include <SDL.h>
@@ -124,7 +124,7 @@ static void handleKeyInput()
     {
       puts("Quit requested");
       atexit(SDL_Quit);
-      exit(1);
+      // exit(1);
     }
 
     if (e.type == SDL_KEYDOWN)

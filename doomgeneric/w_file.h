@@ -25,6 +25,11 @@
 
 typedef struct _wad_file_s wad_file_t;
 
+typedef struct {
+    const unsigned char *data;
+    unsigned int length;
+} wad_file_bm_t;
+
 typedef struct
 {
     // Open a file for reading.
@@ -73,6 +78,9 @@ void W_CloseFile(wad_file_t *wad);
 // Returns the number of bytes read.
 
 size_t W_Read(wad_file_t *wad, unsigned int offset,
+              void *buffer, size_t buffer_len);
+
+size_t W_Read_BM(wad_file_bm_t *wad, unsigned int offset,
               void *buffer, size_t buffer_len);
 
 #endif /* #ifndef __W_FILE__ */

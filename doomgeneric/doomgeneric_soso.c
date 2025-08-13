@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 #include <fcntl.h>
-#include <unistd.h>
+// #include <unistd.h>
 #include <string.h>
 #include <stdint.h>
 #include <sys/time.h>
@@ -137,7 +137,7 @@ void DG_Init()
         if (0 == s_ScreenWidth || 0 == s_ScreenHeight)
         {
             printf("Unable to obtain screen info!");
-            exit(1);
+            // exit(1);
         }
 
         FrameBuffer = mmap(NULL, s_ScreenWidth * s_ScreenHeight * 4, PROT_READ | PROT_WRITE, 0, FrameBufferFd, 0);
@@ -172,13 +172,13 @@ void DG_Init()
     argPosX = M_CheckParmWithArgs("-posx", 1);
     if (argPosX > 0)
     {
-        sscanf(myargv[argPosX + 1], "%d", &s_PositionX);
+        // sscanf(myargv[argPosX + 1], "%d", &s_PositionX);
     }
 
     argPosY = M_CheckParmWithArgs("-posy", 1);
     if (argPosY > 0)
     {
-        sscanf(myargv[argPosY + 1], "%d", &s_PositionY);
+        // sscanf(myargv[argPosY + 1], "%d", &s_PositionY);
     }
 }
 

@@ -20,7 +20,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "string.h" // #include <string.h>
-#include <ctype.h>
+#include "ctype.h"
+#include "printf.h"
 
 #include "config.h"
 #include "doomtype.h"
@@ -113,7 +114,8 @@ static void I_Allegro_PlaySong(void *handle, boolean looping)
 
 	retval = play_midi(current_track_music, looping);
 	if (retval < 0) {
-		fprintf(stderr, "Error playing midi: %d \"%s\"\n", retval, allegro_error);
+		// fprintf(stderr, "Error playing midi: %d \"%s\"\n", retval, allegro_error);
+		printf("Error playing midi: %d \"%s\"\n", retval, allegro_error);
 	}
 }
 
@@ -184,28 +186,31 @@ static boolean IsMid(byte *mem, int len)
 
 static boolean ConvertMus(byte *musdata, int len, char *filename)
 {
-    MEMFILE *instream;
-    MEMFILE *outstream;
-    void *outbuf;
-    size_t outbuf_len;
-    int result;
+	// commented out - jmr
 
-    instream = mem_fopen_read(musdata, len);
-    outstream = mem_fopen_write();
+    // MEMFILE *instream;
+    // MEMFILE *outstream;
+    // void *outbuf;
+    // size_t outbuf_len;
+    // int result;
 
-    result = mus2mid(instream, outstream);
+    // instream = mem_fopen_read(musdata, len);
+    // outstream = mem_fopen_write();
 
-    if (result == 0)
-    {
-        mem_get_buf(outstream, &outbuf, &outbuf_len);
+    // result = mus2mid(instream, outstream);
 
-        M_WriteFile(filename, outbuf, outbuf_len);
-    }
+    // if (result == 0)
+    // {
+    //     mem_get_buf(outstream, &outbuf, &outbuf_len);
 
-    mem_fclose(instream);
-    mem_fclose(outstream);
+    //     M_WriteFile(filename, outbuf, outbuf_len);
+    // }
 
-    return result;
+    // mem_fclose(instream);
+    // mem_fclose(outstream);
+
+    // return result;
+	return true;
 }
 
 
@@ -239,7 +244,8 @@ static void *I_Allegro_RegisterSong(void *data, int len)
 	if (music == NULL)
 	{
 		// Failed to load
-		fprintf(stderr, "Error loading midi: %s\n", allegro_error);
+		// fprintf(stderr, "Error loading midi: %s\n", allegro_error);
+		printf("Error loading midi: %s\n", allegro_error);
 	}
 
 	// Remove the temporary MIDI file;

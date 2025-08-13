@@ -20,6 +20,7 @@
 
 
 #include <math.h>
+#include "printf.h"
 
 #include "z_zone.h"
 
@@ -691,8 +692,8 @@ static void PadRejectArray(byte *array, unsigned int len)
 
     if (len > sizeof(rejectpad))
     {
-        fprintf(stderr, "PadRejectArray: REJECT lump too short to pad! (%i > %i)\n",
-                        len, (int) sizeof(rejectpad));
+        // fprintf(stderr, "PadRejectArray: REJECT lump too short to pad! (%i > %i)\n", len, (int) sizeof(rejectpad));
+        printf("PadRejectArray: REJECT lump too short to pad! (%i > %i)\n", len, (int) sizeof(rejectpad));
 
         // Pad remaining space with 0 (or 0xff, if specified on command line).
 

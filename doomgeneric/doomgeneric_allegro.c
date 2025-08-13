@@ -9,7 +9,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <unistd.h>
+// #include <unistd.h>
 
 #define ALLEGRO_NO_KEY_DEFINES 1
 #include <allegro.h>

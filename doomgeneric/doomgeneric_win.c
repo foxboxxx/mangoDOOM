@@ -114,7 +114,7 @@ void DG_Init()
 	{
 		printf("Window Registration Failed!");
 
-		exit(-1);
+		// exit(-1);
 	}
 
 	RECT rect;
@@ -135,7 +135,7 @@ void DG_Init()
 	{
 		printf("Window Creation Failed!");
 
-		exit(-1);
+		// exit(-1);
 	}
 
 	memset(s_KeyQueue, 0, KEYQUEUE_SIZE * sizeof(unsigned short));

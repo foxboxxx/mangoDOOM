@@ -19,7 +19,8 @@
 
 
 #include <stdlib.h>
-#include <ctype.h>
+#include "ctype.h"
+#include "printf.h"
 
 
 #include "doomdef.h"
@@ -502,25 +503,27 @@ menu_t  SaveDef =
 //
 void M_ReadSaveStrings(void)
 {
-    FILE   *handle;
-    int     i;
-    char    name[256];
+    // commented out - jmr
 
-    for (i = 0;i < load_end;i++)
-    {
-        M_StringCopy(name, P_SaveGameFile(i), sizeof(name));
+    // FILE   *handle;
+    // int     i;
+    // char    name[256];
 
-	handle = fopen(name, "rb");
-        if (handle == NULL)
-        {
-            M_StringCopy(savegamestrings[i], EMPTYSTRING, SAVESTRINGSIZE);
-            LoadMenu[i].status = 0;
-            continue;
-        }
-	fread(&savegamestrings[i], 1, SAVESTRINGSIZE, handle);
-	fclose(handle);
-	LoadMenu[i].status = 1;
-    }
+    // for (i = 0;i < load_end;i++)
+    // {
+    //     M_StringCopy(name, P_SaveGameFile(i), sizeof(name));
+
+	// handle = fopen(name, "rb");
+    //     if (handle == NULL)
+    //     {
+    //         M_StringCopy(savegamestrings[i], EMPTYSTRING, SAVESTRINGSIZE);
+    //         LoadMenu[i].status = 0;
+    //         continue;
+    //     }
+	// fread(&savegamestrings[i], 1, SAVESTRINGSIZE, handle);
+	// fclose(handle);
+	// LoadMenu[i].status = 1;
+    // }
 }
 
 
@@ -967,8 +970,8 @@ void M_Episode(int choice)
     if ( (gamemode == registered)
 	 && (choice > 2))
     {
-      fprintf( stderr,
-	       "M_Episode: 4th episode requires UltimateDOOM\n");
+    //   fprintf( stderr, "M_Episode: 4th episode requires UltimateDOOM\n");
+      printf("M_Episode: 4th episode requires UltimateDOOM\n");
       choice = 0;
     }
 	 

@@ -17,13 +17,15 @@
 //	System interface for sound.
 //
 
+#include "printf.h"
+
 #include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include "string.h" // #include <string.h>
 #include "assert.h" // #include <assert.h>
-#include <ctype.h>
+#include "ctype.h"
 #include <SDL.h>
 #include <SDL_mixer.h>
 
@@ -436,9 +438,9 @@ static boolean ExpandSoundData_SRC(sfxinfo_t *sfxinfo,
 
     if (clipped > 0)
     {
-        fprintf(stderr, "Sound '%s': clipped %u samples (%0.2f %%)\n", 
-                        sfxinfo->name, clipped,
-                        400.0 * clipped / chunk->alen);
+        // fprintf(stderr, "Sound '%s': clipped %u samples (%0.2f %%)\n", 
+                        // sfxinfo->name, clipped,
+                        // 400.0 * clipped / chunk->alen);
     }
 
     return true;
@@ -486,7 +488,7 @@ static void WriteWAV(char *filename, byte *data,
     unsigned int i;
     unsigned short s;
 
-    wav = fopen(filename, "wb");
+    //IGNORE wav = fopen(filename, "wb");
 
     // Header
 
@@ -740,7 +742,7 @@ static void I_SDL_PrecacheSounds(sfxinfo_t *sounds, int num_sounds)
         if ((i % 6) == 0)
         {
             printf(".");
-            fflush(stdout);
+            //IGNORE fflush(stdout);
         }
 
         GetSfxLumpName(&sounds[i], namebuf, sizeof(namebuf));
@@ -980,13 +982,15 @@ static boolean I_SDL_InitSound(boolean _use_sfx_prefix)
 
     if (SDL_Init(SDL_INIT_AUDIO) < 0)
     {
-        fprintf(stderr, "Unable to set up sound.\n");
+        // fprintf(stderr, "Unable to set up sound.\n");
+        printf("Unable to set up sound.\n");
         return false;
     }
 
     if (Mix_OpenAudio(snd_samplerate, AUDIO_S16SYS, 2, GetSliceSize()) < 0)
     {
-        fprintf(stderr, "Error initialising SDL_mixer: %s\n", Mix_GetError());
+        // fprintf(stderr, "Error initialising SDL_mixer: %s\n", Mix_GetError());
+        printf("Error initialising SDL_mixer: %s\n", Mix_GetError());
         return false;
     }
 
@@ -1008,7 +1012,10 @@ static boolean I_SDL_InitSound(boolean _use_sfx_prefix)
 #else
     if (use_libsamplerate != 0)
     {
-        fprintf(stderr, "I_SDL_InitSound: use_libsamplerate=%i, but "
+        // fprintf(stderr, "I_SDL_InitSound: use_libsamplerate=%i, but "
+        //                 "libsamplerate support not compiled in.\n",
+        //                 use_libsamplerate);
+        printf("I_SDL_InitSound: use_libsamplerate=%i, but "
                         "libsamplerate support not compiled in.\n",
                         use_libsamplerate);
     }
@@ -1031,8 +1038,13 @@ static boolean I_SDL_InitSound(boolean _use_sfx_prefix)
         if (v <= SDL_VERSIONNUM(1, 2, 8))
         {
             setpanning_workaround = true;
-            fprintf(stderr, "\n"
-              "ATTENTION: You are using an old version of SDL_mixer!\n"
+            // fprintf(stderr, "\n"
+            //   "ATTENTION: You are using an old version of SDL_mixer!\n"
+            //   "           This version has a bug that may cause "
+            //               "your sound to stutter.\n"
+            //   "           Please upgrade to a newer version!\n"
+            //   "\n");
+            printf("ATTENTION: You are using an old version of SDL_mixer!\n"
               "           This version has a bug that may cause "
                           "your sound to stutter.\n"
               "           Please upgrade to a newer version!\n"

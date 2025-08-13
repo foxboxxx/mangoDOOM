@@ -708,20 +708,20 @@ int main(int argc, char *argv[])
     if (argc != 3)
     {
         printf("Usage: %s <musfile> <midfile>\n", argv[0]);
-        exit(-1);
+        //IGNORE exit(-1);
     }
 
     Z_Init();
 
     infile_len = M_ReadFile(argv[1], &infile);
 
-    src = mem_fopen_read(infile, infile_len);
-    dst = mem_fopen_write();
+    //IGNORE src = mem_fopen_read(infile, infile_len);
+    //IGNORE dst = mem_fopen_write();
 
     if (mus2mid(src, dst))
     {
-        fprintf(stderr, "mus2mid() failed\n");
-        exit(-1);
+        // fprintf(stderr, "mus2mid() failed\n");
+        //IGNORE exit(-1);
     }
 
     // Write result to output file:

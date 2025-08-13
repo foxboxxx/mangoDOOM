@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "string.h" // #include <string.h>
 #include "assert.h" // #include <assert.h>
-#include <ctype.h>
+#include "ctype.h"
 
 #include "deh_str.h"
 #include "i_sound.h"
@@ -174,7 +174,7 @@ static void I_Allegro_PrecacheSounds(sfxinfo_t *sounds, int num_sounds)
 		if ((i % 6) == 0)
 		{
 			printf(".");
-			fflush(stdout);
+			// fflush(stdout);
 		}
 
 		GetSfxLumpName(&sounds[i], namebuf, sizeof(namebuf));

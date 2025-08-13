@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "printf.h"
 
 #include "dstrings.h"
 #include "deh_main.h"
@@ -80,33 +81,34 @@ char *P_SaveGameFile(int slot)
 
 static byte saveg_read8(void)
 {
-    byte result;
+    // byte result;
 
-    if (fread(&result, 1, 1, save_stream) < 1)
-    {
-        if (!savegame_error)
-        {
-            fprintf(stderr, "saveg_read8: Unexpected end of file while "
-                            "reading save game\n");
+    // if (fread(&result, 1, 1, save_stream) < 1)
+    // {
+    //     if (!savegame_error)
+    //     {
+    //         // fprintf(stderr, "saveg_read8: Unexpected end of file while "
+    //         //                 "reading save game\n");
+    //         printf("saveg_read8: Unexpected end of file while reading save game\n");
+    //         savegame_error = true;
+    //     }
+    // }
 
-            savegame_error = true;
-        }
-    }
-
-    return result;
+    // return result;
+    return 0;
 }
 
 static void saveg_write8(byte value)
 {
-    if (fwrite(&value, 1, 1, save_stream) < 1)
-    {
-        if (!savegame_error)
-        {
-            fprintf(stderr, "saveg_write8: Error while writing save game\n");
-
-            savegame_error = true;
-        }
-    }
+    // if (fwrite(&value, 1, 1, save_stream) < 1)
+    // {
+    //     if (!savegame_error)
+    //     {
+    //         // fprintf(stderr, "saveg_write8: Error while writing save game\n");
+    //         printf("saveg_write8: Error while writing save game\n");
+    //         savegame_error = true;
+    //     }
+    // }
 }
 
 static short saveg_read16(void)
@@ -149,34 +151,38 @@ static void saveg_write32(int value)
 
 static void saveg_read_pad(void)
 {
-    unsigned long pos;
-    int padding;
-    int i;
+    // commented out - jmr
 
-    pos = ftell(save_stream);
+    // unsigned long pos;
+    // int padding;
+    // int i;
 
-    padding = (4 - (pos & 3)) & 3;
+    // pos = ftell(save_stream);
 
-    for (i=0; i<padding; ++i)
-    {
-        saveg_read8();
-    }
+    // padding = (4 - (pos & 3)) & 3;
+
+    // for (i=0; i<padding; ++i)
+    // {
+    //     saveg_read8();
+    // }
 }
 
 static void saveg_write_pad(void)
 {
-    unsigned long pos;
-    int padding;
-    int i;
+    // commented out - jmr
 
-    pos = ftell(save_stream);
+    // unsigned long pos;
+    // int padding;
+    // int i;
 
-    padding = (4 - (pos & 3)) & 3;
+    // pos = ftell(save_stream);
 
-    for (i=0; i<padding; ++i)
-    {
-        saveg_write8(0);
-    }
+    // padding = (4 - (pos & 3)) & 3;
+
+    // for (i=0; i<padding; ++i)
+    // {
+    //     saveg_write8(0);
+    // }
 }
 
 

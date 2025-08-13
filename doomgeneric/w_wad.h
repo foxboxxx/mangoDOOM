@@ -37,6 +37,7 @@
 //
 
 typedef struct lumpinfo_s lumpinfo_t;
+typedef struct lumpinfo_bm_s lumpinfo_bm_t;
 
 struct lumpinfo_s
 {
@@ -50,12 +51,26 @@ struct lumpinfo_s
 
     lumpinfo_t *next;
 };
+struct lumpinfo_bm_s
+{
+    char	name[8];
+    wad_file_bm_t *wad_file;
+    int		position;
+    int		size;
+    void       *cache;
+
+    // Used for hash table lookups
+
+    lumpinfo_bm_t *next;
+};
 
 
 extern lumpinfo_t *lumpinfo;
+extern lumpinfo_bm_t *lumpinfobm;
 extern unsigned int numlumps;
 
 wad_file_t *W_AddFile (char *filename);
+wad_file_bm_t *W_AddFileAlt (const unsigned char *data, unsigned int length);
 
 int	W_CheckNumForName (char* name);
 int	W_GetNumForName (char* name);

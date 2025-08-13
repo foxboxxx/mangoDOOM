@@ -12,6 +12,7 @@ else
 endif
 
 CC=riscv64-unknown-elf-gcc
+CROSS_COMPILE = riscv64-unknown-elf-
 
 # PRODUCTS = $(SRC_PROGRAMS:.c=.bin)
 # DEFAULT_NAME = $(firstword $(SRC_PROGRAMS:.c=))
@@ -21,7 +22,7 @@ ARCH    = -march=rv64im -mabi=lp64
 ASFLAGS = $(ARCH)
 CFLAGS  = $(ARCH) -g -Og -I$$CS107E/include $$warn $$freestanding -fno-omit-frame-pointer -fstack-protector-strong -fstrict-volatile-bitfields -nostdlib
 LDFLAGS = -nostdlib -L$$CS107E/lib -T memmap.ld
-LDLIBS  = -lmango -lmango_gcc 
+LDLIBS  = -lmango -lmango_gcc
 OBJDUMP_FLAGS = -d --no-show-raw-insn --no-addresses --disassembler-color=terminal --visualize-jumps=color
 GDB_FLAGS= -q --command=$$CS107E/other/gdbsim.commands
 
@@ -32,11 +33,14 @@ CFLAGS += -I$$CS107E/../extras/src
 vpath %.c ./pseudo_include
 CFLAGS += -I./pseudo_include
 
+GDB_FLAGS= -q --command=$$CS107E/other/gdbsim.commands
+
+
 # subdirectory for objects
 OBJDIR = build
 OUTPUT = doomgeneric
 
-SRC_C = strings_extension.c malloc_extension.c dummy.c am_map.c doomdef.c \
+SRC_C = doomgeneric_mango.c strings_extension.c malloc_extension.c ctype.c dummy.c am_map.c doomdef.c \
         doomstat.c dstrings.c d_event.c d_items.c d_iwad.c d_loop.c d_main.c \
 		d_mode.c d_net.c f_finale.c f_wipe.c g_game.c hu_lib.c hu_stuff.c \
 		info.c i_cdmus.c i_endoom.c i_joystick.c i_scale.c i_sound.c i_system.c \
@@ -47,33 +51,62 @@ SRC_C = strings_extension.c malloc_extension.c dummy.c am_map.c doomdef.c \
 		p_tick.c p_user.c r_bsp.c r_data.c r_draw.c r_main.c r_plane.c r_segs.c \
 		r_sky.c r_things.c sha1.c sounds.c statdump.c st_lib.c st_stuff.c s_sound.c\
 		tables.c v_video.c wi_stuff.c w_checksum.c w_file.c w_main.c w_wad.c \
-		z_zone.c w_file_stdc.c i_input.c i_video.c doomgeneric.c doomgeneric_mango.c \
-		pseudo_sys.c
+		z_zone.c w_file_stdc.c i_input.c i_video.c doomgeneric.c doom_wad.c 
+		
 OBJS += $(addprefix $(OBJDIR)/, $(SRC_C:.c=.o))
 
-all:	 $(OUTPUT)
+all: $(OUTPUT).bin
 
-clean:
-	rm -rf $(OBJDIR)
-	rm -f $(OUTPUT)
-	rm -f $(OUTPUT).gdb
-	rm -f $(OUTPUT).map
+$(OUTPUT).debug: $(OUTPUT.elf)
+	riscv64-unknown-elf-gdb $(GDB_FLAGS) $<
 
-$(OUTPUT):	$(OBJS)
-	@echo [Linking $@]
-	$(VB)$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) \
-	-o $(OUTPUT) $(LDLIBS) -Wl,-Map,$(OUTPUT).map
-	@echo [Size]
-	-$(CROSS_COMPILE)size $(OUTPUT)
+$(OUTPUT).elf: $(OBJS)
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-$(OBJS): | $(OBJDIR)
+$(OUTPUT).bin: $(OUTPUT).elf
+	$(CROSS_COMPILE)objcopy $< -O binary $@
+
+$(OBJDIR)/%.o: %.c | $(OBJDIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJDIR):
 	mkdir -p $(OBJDIR)
 
-$(OBJDIR)/%.o:	%.c
-	@echo [Compiling $<]
-	$(VB)$(CC) $(CFLAGS) -c $< -o $@
+run: $(OUTPUT).bin
+	mango-run $<
 
-print:
-	@echo OBJS: $(OBJS)
+debug: $(OUTPUT).debug
+
+clean:
+	rm -rf $(OBJDIR) $(OUTPUT).elf $(OUTPUT).bin
+
+.PHONY: all run clean debug
+# .PRECIOUS: %.elf %.o
+
+
+# all:	 $(OUTPUT)
+
+# clean:
+# 	rm -rf $(OBJDIR)
+# 	rm -f $(OUTPUT)
+# 	rm -f $(OUTPUT).gdb
+# 	rm -f $(OUTPUT).map
+
+# $(OUTPUT):	$(OBJS)
+# 	@echo [Linking $@]
+# 	$(VB)$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) \
+# 	-o $(OUTPUT) $(LDLIBS) -Wl,-Map,$(OUTPUT).map
+# 	@echo [Size]
+# 	-$(CROSS_COMPILE)size $(OUTPUT)
+
+# $(OBJS): | $(OBJDIR)
+
+# $(OBJDIR):
+# 	mkdir -p $(OBJDIR)
+
+# $(OBJDIR)/%.o:	%.c
+# 	@echo [Compiling $<]
+# 	$(VB)$(CC) $(CFLAGS) -c $< -o $@
+
+# print:
+# 	@echo OBJS: $(OBJS)

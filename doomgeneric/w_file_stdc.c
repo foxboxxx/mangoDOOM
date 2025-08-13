@@ -22,45 +22,61 @@
 #include "w_file.h"
 #include "z_zone.h"
 
+#include "doom_wad.h"
+
 typedef struct
 {
     wad_file_t wad;
-    FILE *fstream;
+    // FILE *fstream;
 } stdc_wad_file_t;
+
+typedef struct
+{
+    wad_file_t wad;
+    const unsigned char * data;
+} mem_wad_file_t;
 
 extern wad_file_class_t stdc_wad_file;
 
 static wad_file_t *W_StdC_OpenFile(char *path)
 {
-    stdc_wad_file_t *result;
-    FILE *fstream;
+    // stdc_wad_file_t *result;
+    // FILE *fstream;
 
-    fstream = fopen(path, "rb");
+    // fstream = fopen(path, "rb");
 
-    if (fstream == NULL)
-    {
-        return NULL;
-    }
+    // if (fstream == NULL)
+    // {
+    //     return NULL;
+    // }
 
     // Create a new stdc_wad_file_t to hold the file handle.
 
-    result = Z_Malloc(sizeof(stdc_wad_file_t), PU_STATIC, 0);
-    result->wad.file_class = &stdc_wad_file;
-    result->wad.mapped = NULL;
-    result->wad.length = M_FileLength(fstream);
-    result->fstream = fstream;
+    // result = Z_Malloc(sizeof(stdc_wad_file_t), PU_STATIC, 0);
+    // result->wad.file_class = &stdc_wad_file;
+    // result->wad.mapped = NULL;
+    // result->wad.length = M_FileLength(fstream);
+    // result->fstream = fstream;
+
+    mem_wad_file_t *result;
+
+    result = Z_Malloc(sizeof(mem_wad_file_t), PU_STATIC, 0);
+    // result->wad.file_class = &mem_wad_file;
+    result->wad.mapped = DOOM_WAD;
+    result->wad.length = DOOM_WAD_len; // from the header
+    result->data = DOOM_WAD;
 
     return &result->wad;
 }
 
 static void W_StdC_CloseFile(wad_file_t *wad)
 {
-    stdc_wad_file_t *stdc_wad;
+    // stdc_wad_file_t *stdc_wad;
 
-    stdc_wad = (stdc_wad_file_t *) wad;
+    // stdc_wad = (stdc_wad_file_t *) wad;
 
-    fclose(stdc_wad->fstream);
-    Z_Free(stdc_wad);
+    // fclose(stdc_wad->fstream);
+    // Z_Free(stdc_wad);
 }
 
 // Read data from the specified position in the file into the 
@@ -69,20 +85,27 @@ static void W_StdC_CloseFile(wad_file_t *wad)
 size_t W_StdC_Read(wad_file_t *wad, unsigned int offset,
                    void *buffer, size_t buffer_len)
 {
-    stdc_wad_file_t *stdc_wad;
-    size_t result;
+    // stdc_wad_file_t *stdc_wad;
+    // size_t result;
 
-    stdc_wad = (stdc_wad_file_t *) wad;
+    // stdc_wad = (stdc_wad_file_t *) wad;
 
-    // Jump to the specified position in the file.
+    // // Jump to the specified position in the file.
 
-    fseek(stdc_wad->fstream, offset, SEEK_SET);
+    // fseek(stdc_wad->fstream, offset, SEEK_SET);
 
-    // Read into the buffer.
+    // // Read into the buffer.
 
-    result = fread(buffer, 1, buffer_len, stdc_wad->fstream);
+    // result = fread(buffer, 1, buffer_len, stdc_wad->fstream);
 
-    return result;
+    // return result;
+    if (wad->mapped == NULL || offset >= wad->length) return 0;
+
+    if (offset + buffer_len > wad->length) buffer_len = wad->length - offset;
+
+    memcpy(buffer, (const unsigned char *)wad->mapped + offset, buffer_len);
+
+    return buffer_len;
 }
 
 
@@ -92,5 +115,3 @@ wad_file_class_t stdc_wad_file =
     W_StdC_CloseFile,
     W_StdC_Read,
 };
-
-

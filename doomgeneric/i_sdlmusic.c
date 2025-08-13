@@ -20,7 +20,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "string.h" // #include <string.h>
-#include <ctype.h>
+#include "ctype.h"
+#include "printf.h"
+
+
 #include <SDL.h>
 #include <SDL_mixer.h>
 
@@ -157,8 +160,7 @@ static unsigned int ParseVorbisTime(unsigned int samplerate_hz, char *value)
 
         if (*p == '.')
         {
-            return result * samplerate_hz
-	         + (unsigned int) (atof(p) * samplerate_hz);
+            return result * samplerate_hz + 0;//(unsigned int) (atof(p) * samplerate_hz);
         }
     }
 
@@ -195,57 +197,59 @@ static void ParseVorbisComment(file_metadata_t *metadata, char *comment)
 // Parse a vorbis comments structure, reading from the given file.
 static void ParseVorbisComments(file_metadata_t *metadata, FILE *fs)
 {
-    uint32_t buf;
-    unsigned int num_comments, i, comment_len;
-    char *comment;
+    // commented out - jmr
 
-    // We must have read the sample rate already from an earlier header.
-    if (metadata->samplerate_hz == 0)
-    {
-	return;
-    }
+    // uint32_t buf;
+    // unsigned int num_comments, i, comment_len;
+    // char *comment;
 
-    // Skip the starting part we don't care about.
-    if (fread(&buf, 4, 1, fs) < 1)
-    {
-        return;
-    }
-    if (fseek(fs, LONG(buf), SEEK_CUR) != 0)
-    {
-	return;
-    }
+    // // We must have read the sample rate already from an earlier header.
+    // if (metadata->samplerate_hz == 0)
+    // {
+	// return;
+    // }
 
-    // Read count field for number of comments.
-    if (fread(&buf, 4, 1, fs) < 1)
-    {
-        return;
-    }
-    num_comments = LONG(buf);
+    // // Skip the starting part we don't care about.
+    // if (fread(&buf, 4, 1, fs) < 1)
+    // {
+    //     return;
+    // }
+    // if (fseek(fs, LONG(buf), SEEK_CUR) != 0)
+    // {
+	// return;
+    // }
 
-    // Read each individual comment.
-    for (i = 0; i < num_comments; ++i)
-    {
-        // Read length of comment.
-        if (fread(&buf, 4, 1, fs) < 1)
-	{
-            return;
-	}
+    // // Read count field for number of comments.
+    // if (fread(&buf, 4, 1, fs) < 1)
+    // {
+    //     return;
+    // }
+    // num_comments = LONG(buf);
 
-        comment_len = LONG(buf);
+    // // Read each individual comment.
+    // for (i = 0; i < num_comments; ++i)
+    // {
+    //     // Read length of comment.
+    //     if (fread(&buf, 4, 1, fs) < 1)
+	// {
+    //         return;
+	// }
 
-        // Read actual comment data into string buffer.
-        comment = calloc(1, comment_len + 1);
-        if (comment == NULL
-         || fread(comment, 1, comment_len, fs) < comment_len)
-        {
-            free(comment);
-            break;
-        }
+    //     comment_len = LONG(buf);
 
-        // Parse comment string.
-        ParseVorbisComment(metadata, comment);
-        free(comment);
-    }
+    //     // Read actual comment data into string buffer.
+    //     comment = calloc(1, comment_len + 1);
+    //     if (comment == NULL
+    //      || fread(comment, 1, comment_len, fs) < comment_len)
+    //     {
+    //         free(comment);
+    //         break;
+    //     }
+
+    //     // Parse comment string.
+    //     ParseVorbisComment(metadata, comment);
+    //     free(comment);
+    // }
 }
 
 static void ParseFlacStreaminfo(file_metadata_t *metadata, FILE *fs)
@@ -269,51 +273,53 @@ static void ParseFlacStreaminfo(file_metadata_t *metadata, FILE *fs)
 
 static void ParseFlacFile(file_metadata_t *metadata, FILE *fs)
 {
-    byte header[4];
-    unsigned int block_type;
-    size_t block_len;
-    boolean last_block;
+    // commented out - jmr
 
-    for (;;)
-    {
-        long pos = -1;
+    // byte header[4];
+    // unsigned int block_type;
+    // size_t block_len;
+    // boolean last_block;
 
-        // Read METADATA_BLOCK_HEADER:
-        if (fread(header, 4, 1, fs) < 1)
-        {
-            return;
-        }
+    // for (;;)
+    // {
+    //     long pos = -1;
 
-        block_type = header[0] & ~0x80;
-        last_block = (header[0] & 0x80) != 0;
-        block_len = (header[1] << 16) | (header[2] << 8) | header[3];
+    //     // Read METADATA_BLOCK_HEADER:
+    //     if (fread(header, 4, 1, fs) < 1)
+    //     {
+    //         return;
+    //     }
 
-        pos = ftell(fs);
-        if (pos < 0)
-        {
-            return;
-        }
+    //     block_type = header[0] & ~0x80;
+    //     last_block = (header[0] & 0x80) != 0;
+    //     block_len = (header[1] << 16) | (header[2] << 8) | header[3];
 
-        if (block_type == FLAC_STREAMINFO)
-        {
-            ParseFlacStreaminfo(metadata, fs);
-        }
-        else if (block_type == FLAC_VORBIS_COMMENT)
-        {
-            ParseVorbisComments(metadata, fs);
-        }
+    //     pos = ftell(fs);
+    //     if (pos < 0)
+    //     {
+    //         return;
+    //     }
 
-        if (last_block)
-        {
-            break;
-        }
+    //     if (block_type == FLAC_STREAMINFO)
+    //     {
+    //         ParseFlacStreaminfo(metadata, fs);
+    //     }
+    //     else if (block_type == FLAC_VORBIS_COMMENT)
+    //     {
+    //         ParseVorbisComments(metadata, fs);
+    //     }
 
-        // Seek to start of next block.
-        if (fseek(fs, pos + block_len, SEEK_SET) != 0)
-        {
-            return;
-        }
-    }
+    //     if (last_block)
+    //     {
+    //         break;
+    //     }
+
+    //     // Seek to start of next block.
+    //     if (fseek(fs, pos + block_len, SEEK_SET) != 0)
+    //     {
+    //         return;
+    //     }
+    // }
 }
 
 static void ParseOggIdHeader(file_metadata_t *metadata, FILE *fs)
@@ -369,43 +375,45 @@ static void ParseOggFile(file_metadata_t *metadata, FILE *fs)
 
 static void ReadLoopPoints(char *filename, file_metadata_t *metadata)
 {
-    FILE *fs;
-    char header[4];
+    // commented out - jmr
 
-    metadata->valid = false;
-    metadata->samplerate_hz = 0;
-    metadata->start_time = 0;
-    metadata->end_time = -1;
+    // FILE *fs;
+    // char header[4];
 
-    fs = fopen(filename, "r");
+    // metadata->valid = false;
+    // metadata->samplerate_hz = 0;
+    // metadata->start_time = 0;
+    // metadata->end_time = -1;
 
-    if (fs == NULL)
-    {
-        return;
-    }
+    // fs = fopen(filename, "r");
 
-    // Check for a recognized file format; use the first four bytes
-    // of the file.
+    // if (fs == NULL)
+    // {
+    //     return;
+    // }
 
-    if (fread(header, 4, 1, fs) < 1)
-    {
-        fclose(fs);
-        return;
-    }
+    // // Check for a recognized file format; use the first four bytes
+    // // of the file.
 
-    if (memcmp(header, FLAC_HEADER, 4) == 0)
-    {
-        ParseFlacFile(metadata, fs);
-    }
-    else if (memcmp(header, OGG_HEADER, 4) == 0)
-    {
-        ParseOggFile(metadata, fs);
-    }
+    // if (fread(header, 4, 1, fs) < 1)
+    // {
+    //     fclose(fs);
+    //     return;
+    // }
 
-    fclose(fs);
+    // if (memcmp(header, FLAC_HEADER, 4) == 0)
+    // {
+    //     ParseFlacFile(metadata, fs);
+    // }
+    // else if (memcmp(header, OGG_HEADER, 4) == 0)
+    // {
+    //     ParseOggFile(metadata, fs);
+    // }
 
-    // Only valid if at the very least we read the sample rate.
-    metadata->valid = metadata->samplerate_hz > 0;
+    // fclose(fs);
+
+    // // Only valid if at the very least we read the sample rate.
+    // metadata->valid = metadata->samplerate_hz > 0;
 }
 
 // Given a MUS lump, look up a substitute MUS file to play instead
@@ -621,37 +629,40 @@ static char *ParseSubstituteLine(char *filename, char *line)
 
 static boolean ReadSubstituteConfig(char *filename)
 {
-    char line[128];
-    FILE *fs;
-    char *error;
-    int linenum = 1;
-    int old_subst_music_len;
+    // commented out - jmr
 
-    fs = fopen(filename, "r");
+    // char line[128];
+    // FILE *fs;
+    // char *error;
+    // int linenum = 1;
+    // int old_subst_music_len;
 
-    if (fs == NULL)
-    {
-        return false;
-    }
+    // fs = fopen(filename, "r");
 
-    old_subst_music_len = subst_music_len;
+    // if (fs == NULL)
+    // {
+    //     return false;
+    // }
 
-    while (!feof(fs))
-    {
-        M_StringCopy(line, "", sizeof(line));
-        fgets(line, sizeof(line), fs);
+    // old_subst_music_len = subst_music_len;
 
-        error = ParseSubstituteLine(filename, line);
+    // while (!feof(fs))
+    // {
+    //     M_StringCopy(line, "", sizeof(line));
+    //     fgets(line, sizeof(line), fs);
 
-        if (error != NULL)
-        {
-            fprintf(stderr, "%s:%i: Error: %s\n", filename, linenum, error);
-        }
+    //     error = ParseSubstituteLine(filename, line);
 
-        ++linenum;
-    }
+    //     if (error != NULL)
+    //     {
+    //         // fprintf(stderr, "%s:%i: Error: %s\n", filename, linenum, error);
+    //         printf( "%s:%i: Error: %s\n", filename, linenum, error);)
+    //     }
 
-    fclose(fs);
+    //     ++linenum;
+    // }
+
+    // fclose(fs);
 
     return true;
 }
@@ -723,55 +734,63 @@ static boolean IsMusicLump(int lumpnum)
 
 static void DumpSubstituteConfig(char *filename)
 {
-    sha1_context_t context;
-    sha1_digest_t digest;
-    char name[9];
-    byte *data;
-    FILE *fs;
-    int lumpnum, h;
+    // commented out - jmr
 
-    fs = fopen(filename, "w");
+    // sha1_context_t context;
+    // sha1_digest_t digest;
+    // char name[9];
+    // byte *data;
+    // FILE *fs;
+    // int lumpnum, h;
 
-    if (fs == NULL)
-    {
-        I_Error("Failed to open %s for writing", filename);
-        return;
-    }
+    // fs = fopen(filename, "w");
 
-    fprintf(fs, "# Example %s substitute MIDI file.\n\n", PACKAGE_NAME);
-    fprintf(fs, "# SHA1 hash                              = filename\n");
+    // if (fs == NULL)
+    // {
+    //     I_Error("Failed to open %s for writing", filename);
+    //     return;
+    // }
 
-    for (lumpnum = 0; lumpnum < numlumps; ++lumpnum)
-    {
-        strncpy(name, lumpinfo[lumpnum].name, 8);
-        name[8] = '\0';
+    // // fprintf(fs, "# Example %s substitute MIDI file.\n\n", PACKAGE_NAME);
+    // // fprintf(fs, "# SHA1 hash                              = filename\n");
 
-        if (!IsMusicLump(lumpnum))
-        {
-            continue;
-        }
+    // printf("# Example %s substitute MIDI file.\n\n", PACKAGE_NAME);
+    // printf("# SHA1 hash                              = filename\n");
 
-        // Calculate hash.
-        data = W_CacheLumpNum(lumpnum, PU_STATIC);
-        SHA1_Init(&context);
-        SHA1_Update(&context, data, W_LumpLength(lumpnum));
-        SHA1_Final(digest, &context);
-        W_ReleaseLumpNum(lumpnum);
+    // for (lumpnum = 0; lumpnum < numlumps; ++lumpnum)
+    // {
+    //     strncpy(name, lumpinfo[lumpnum].name, 8);
+    //     name[8] = '\0';
 
-        // Print line.
-        for (h = 0; h < sizeof(sha1_digest_t); ++h)
-        {
-            fprintf(fs, "%02x", digest[h]);
-        }
+    //     if (!IsMusicLump(lumpnum))
+    //     {
+    //         continue;
+    //     }
 
-        fprintf(fs, " = %s.ogg\n", name);
-    }
+    //     // Calculate hash.
+    //     data = W_CacheLumpNum(lumpnum, PU_STATIC);
+    //     SHA1_Init(&context);
+    //     SHA1_Update(&context, data, W_LumpLength(lumpnum));
+    //     SHA1_Final(digest, &context);
+    //     W_ReleaseLumpNum(lumpnum);
 
-    fprintf(fs, "\n");
-    fclose(fs);
+    //     // Print line.
+    //     for (h = 0; h < sizeof(sha1_digest_t); ++h)
+    //     {
+    //         // fprintf(fs, "%02x", digest[h]);
+    //         printf("%02x", digest[h]);
+    //     }
 
-    printf("Substitute MIDI config file written to %s.\n", filename);
-    I_Quit();
+    //     // fprintf(fs, " = %s.ogg\n", name);
+    //     printf(" = %s.ogg\n", name);
+    // }
+
+    // // fprintf(fs, "\n");
+    // printf("\n");
+    // fclose(fs);
+
+    // printf("Substitute MIDI config file written to %s.\n", filename);
+    // I_Quit();
 }
 
 // If the temp_timidity_cfg config variable is set, generate a "wrapper"
@@ -781,32 +800,36 @@ static void DumpSubstituteConfig(char *filename)
 
 static boolean WriteWrapperTimidityConfig(char *write_path)
 {
-    char *p, *path;
-    FILE *fstream;
+    // commented out - jmr
 
-    if (!strcmp(timidity_cfg_path, ""))
-    {
-        return false;
-    }
+    // char *p, *path;
+    // FILE *fstream;
 
-    fstream = fopen(write_path, "w");
+    // if (!strcmp(timidity_cfg_path, ""))
+    // {
+    //     return false;
+    // }
 
-    if (fstream == NULL)
-    {
-        return false;
-    }
+    // fstream = fopen(write_path, "w");
 
-    p = strrchr(timidity_cfg_path, DIR_SEPARATOR);
-    if (p != NULL)
-    {
-        path = strdup(timidity_cfg_path);
-        path[p - timidity_cfg_path] = '\0';
-        fprintf(fstream, "dir %s\n", path);
-        free(path);
-    }
+    // if (fstream == NULL)
+    // {
+    //     return false;
+    // }
 
-    fprintf(fstream, "source %s\n", timidity_cfg_path);
-    fclose(fstream);
+    // p = strrchr(timidity_cfg_path, DIR_SEPARATOR);
+    // if (p != NULL)
+    // {
+    //     path = strdup(timidity_cfg_path);
+    //     path[p - timidity_cfg_path] = '\0';
+    //     // fprintf(fstream, "dir %s\n", path);
+    //     printf("dir %s\n", path);
+    //     free(path);
+    // }
+
+    // // fprintf(fstream, "source %s\n", timidity_cfg_path);
+    // printf("source %s\n", timidity_cfg_path);
+    // fclose(fstream);
 
     return true;
 }
@@ -930,11 +953,14 @@ static boolean I_SDL_InitMusic(void)
     {
         if (SDL_Init(SDL_INIT_AUDIO) < 0)
         {
-            fprintf(stderr, "Unable to set up sound.\n");
+            // fprintf(stderr, "Unable to set up sound.\n");
+            printf("Unable to set up sound.\n");
         }
         else if (Mix_OpenAudio(snd_samplerate, AUDIO_S16SYS, 2, 1024) < 0)
         {
-            fprintf(stderr, "Error initializing SDL_mixer: %s\n",
+            // fprintf(stderr, "Error initializing SDL_mixer: %s\n",
+            //         Mix_GetError());
+            printf("Error initializing SDL_mixer: %s\n",
                     Mix_GetError());
             SDL_QuitSubSystem(SDL_INIT_AUDIO);
         }
@@ -1106,28 +1132,31 @@ static boolean IsMid(byte *mem, int len)
 
 static boolean ConvertMus(byte *musdata, int len, char *filename)
 {
-    MEMFILE *instream;
-    MEMFILE *outstream;
-    void *outbuf;
-    size_t outbuf_len;
-    int result;
+    // commented out - jmr
 
-    instream = mem_fopen_read(musdata, len);
-    outstream = mem_fopen_write();
+    // MEMFILE *instream;
+    // MEMFILE *outstream;
+    // void *outbuf;
+    // size_t outbuf_len;
+    // int result;
 
-    result = mus2mid(instream, outstream);
+    // instream = mem_fopen_read(musdata, len);
+    // outstream = mem_fopen_write();
 
-    if (result == 0)
-    {
-        mem_get_buf(outstream, &outbuf, &outbuf_len);
+    // result = mus2mid(instream, outstream);
 
-        M_WriteFile(filename, outbuf, outbuf_len);
-    }
+    // if (result == 0)
+    // {
+    //     mem_get_buf(outstream, &outbuf, &outbuf_len);
 
-    mem_fclose(instream);
-    mem_fclose(outstream);
+    //     M_WriteFile(filename, outbuf, outbuf_len);
+    // }
 
-    return result;
+    // mem_fclose(instream);
+    // mem_fclose(outstream);
+
+    // return result;
+    return true;
 }
 
 static void *I_SDL_RegisterSong(void *data, int len)
@@ -1153,7 +1182,9 @@ static void *I_SDL_RegisterSong(void *data, int len)
         {
             // Fall through and play MIDI normally, but print an error
             // message.
-            fprintf(stderr, "Failed to load substitute music file: %s: %s\n",
+            // fprintf(stderr, "Failed to load substitute music file: %s: %s\n",
+            //         filename, Mix_GetError());
+            printf("Failed to load substitute music file: %s: %s\n",
                     filename, Mix_GetError());
         }
         else
@@ -1192,7 +1223,8 @@ static void *I_SDL_RegisterSong(void *data, int len)
     {
         // Failed to load
 
-        fprintf(stderr, "Error loading midi: %s\n", Mix_GetError());
+        // fprintf(stderr, "Error loading midi: %s\n", Mix_GetError());
+        printf("Error loading midi: %s\n", Mix_GetError());
     }
 
     // Remove the temporary MIDI file; however, when using an external

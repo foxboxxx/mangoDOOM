@@ -15,7 +15,7 @@
 
 
 #include <stdlib.h>
-#include <ctype.h>
+#include "ctype.h"
 #include <math.h>
 #include "string.h" // #include <string.h>
 #include <fcntl.h>

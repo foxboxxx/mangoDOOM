@@ -101,6 +101,7 @@ void Z_Init (void)
 
     mainzone = (memzone_t *)I_ZoneBase (&size);
     mainzone->size = size;
+    printf("here, @%x, %d\n", mainzone, mainzone->size);
 
     // set the entire zone to one free block
     mainzone->blocklist.next =
@@ -117,6 +118,7 @@ void Z_Init (void)
     block->tag = PU_FREE;
     
     block->size = mainzone->size - sizeof(memzone_t);
+    printf("exiting z_init()\n");
 }
 
 
@@ -366,30 +368,30 @@ Z_DumpHeap
 //
 void Z_FileDumpHeap (FILE* f)
 {
-    memblock_t*	block;
+    // memblock_t*	block;
 	
-    fprintf (f,"zone size: %i  location: %p\n",mainzone->size,mainzone);
+    // fprintf (f,"zone size: %i  location: %p\n",mainzone->size,mainzone);
 	
-    for (block = mainzone->blocklist.next ; ; block = block->next)
-    {
-	fprintf (f,"block:%p    size:%7i    user:%p    tag:%3i\n",
-		 block, block->size, block->user, block->tag);
+    // for (block = mainzone->blocklist.next ; ; block = block->next)
+    // {
+	// fprintf (f,"block:%p    size:%7i    user:%p    tag:%3i\n",
+	// 	 block, block->size, block->user, block->tag);
 		
-	if (block->next == &mainzone->blocklist)
-	{
-	    // all blocks have been hit
-	    break;
-	}
+	// if (block->next == &mainzone->blocklist)
+	// {
+	//     // all blocks have been hit
+	//     break;
+	// }
 	
-	if ( (byte *)block + block->size != (byte *)block->next)
-	    fprintf (f,"ERROR: block size does not touch the next block\n");
+	// if ( (byte *)block + block->size != (byte *)block->next)
+	//     fprintf (f,"ERROR: block size does not touch the next block\n");
 
-	if ( block->next->prev != block)
-	    fprintf (f,"ERROR: next block doesn't have proper back link\n");
+	// if ( block->next->prev != block)
+	//     fprintf (f,"ERROR: next block doesn't have proper back link\n");
 
-	if (block->tag == PU_FREE && block->next->tag == PU_FREE)
-	    fprintf (f,"ERROR: two consecutive free blocks\n");
-    }
+	// if (block->tag == PU_FREE && block->next->tag == PU_FREE)
+	//     fprintf (f,"ERROR: two consecutive free blocks\n");
+    // }
 }
 
 

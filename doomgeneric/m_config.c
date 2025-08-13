@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "string.h" // #include <string.h>
-#include <ctype.h>
+#include "ctype.h"
 #include <errno.h>
 
 #include "config.h"
@@ -1611,9 +1611,10 @@ static void SaveDefaultCollection(default_collection_t *collection)
 #if ORIGCODE
     default_t *defaults;
     int i, v;
-    FILE *f;
+    FILE *f;    
+    // commented out - jmr
 	
-    f = fopen (collection->filename, "w");
+    //IGNORE f = fopen (collection->filename, "w");
     if (!f)
 	return; // can't write the file, but don't complain
 
@@ -1635,7 +1636,7 @@ static void SaveDefaultCollection(default_collection_t *collection)
         chars_written = fprintf(f, "%s ", defaults[i].name);
 
         for (; chars_written < 30; ++chars_written)
-            fprintf(f, " ");
+            // fprintf(f, " ");
 
         // Print the value
 
@@ -1684,27 +1685,27 @@ static void SaveDefaultCollection(default_collection_t *collection)
                     }
                 }
 
-	        fprintf(f, "%i", v);
+	        // fprintf(f, "%i", v);
                 break;
 
             case DEFAULT_INT:
-	        fprintf(f, "%i", * (int *) defaults[i].location);
+	        // fprintf(f, "%i", * (int *) defaults[i].location);
                 break;
 
             case DEFAULT_INT_HEX:
-	        fprintf(f, "0x%x", * (int *) defaults[i].location);
+	        // fprintf(f, "0x%x", * (int *) defaults[i].location);
                 break;
 
             case DEFAULT_FLOAT:
-                fprintf(f, "%f", * (float *) defaults[i].location);
+                // fprintf(f, "%f", * (float *) defaults[i].location);
                 break;
 
             case DEFAULT_STRING:
-	        fprintf(f,"\"%s\"", * (char **) (defaults[i].location));
+	        // fprintf(f,"\"%s\"", * (char **) (defaults[i].location));
                 break;
         }
 
-        fprintf(f, "\n");
+        // fprintf(f, "\n");
     }
 
     fclose (f);
@@ -1715,12 +1716,11 @@ static void SaveDefaultCollection(default_collection_t *collection)
 
 static int ParseIntParameter(char *strparm)
 {
-    int parm;
+    // Added = 0
+    int parm = 0;
 
-    if (strparm[0] == '0' && strparm[1] == 'x')
-        sscanf(strparm+2, "%x", &parm);
-    else
-        sscanf(strparm, "%i", &parm);
+    // if (strparm[0] == '0' && strparm[1] == 'x') sscanf(strparm+2, "%x", &parm);
+    // else sscanf(strparm, "%i", &parm);
 
     return parm;
 }
@@ -1763,7 +1763,7 @@ static void SetVariable(default_t *def, char *value)
             break;
 
         case DEFAULT_FLOAT:
-            * (float *) def->location = (float) atof(value);
+            * (float *) def->location = (float) 0;//atof(value);
             break;
     }
 }
@@ -1776,8 +1776,10 @@ static void LoadDefaultCollection(default_collection_t *collection)
     char defname[80];
     char strparm[100];
 
+    // commented out - jmr
+
     // read the file in, overriding any set defaults
-    f = fopen(collection->filename, "r");
+    //IGNORE f = fopen(collection->filename, "r");
 
     if (f == NULL)
     {
@@ -1789,7 +1791,7 @@ static void LoadDefaultCollection(default_collection_t *collection)
 
     while (!feof(f))
     {
-        if (fscanf(f, "%79s %99[^\n]\n", defname, strparm) != 2)
+        //IGNORE if (fscanf(f, "%79s %99[^\n]\n", defname, strparm) != 2)
         {
             // This line doesn't match
 
@@ -1904,7 +1906,7 @@ void M_LoadDefaults (void)
         doom_defaults.filename
             = M_StringJoin(configdir, default_main_config, NULL);
     }
-
+   
     printf("saving config in %s\n", doom_defaults.filename);
 
     //!
@@ -1951,7 +1953,7 @@ static default_t *GetDefaultForName(char *name)
 
     if (result == NULL)
     {
-        I_Error("Unknown configuration variable: '%s'", name);
+        printf("Unknown configuration variable: '%s'", name);
     }
 
     return result;

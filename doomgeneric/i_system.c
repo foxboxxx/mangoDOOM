@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "string.h" // #include <string.h>
+#include "printf.h"
 
 #include <stdarg.h>
 
@@ -27,7 +28,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #else
-#include "unistd.h" // #include <unistd.h>
+// #include "unistd.h" // #include <unistd.h>
 #endif
 
 #ifdef ORIGCODE
@@ -125,6 +126,7 @@ static byte *AutoAllocMemory(int *size, int default_ram, int min_ram)
         {
             default_ram -= 1;
         }
+        printf("mallocd");
     }
 
     return zonemem;
@@ -260,7 +262,7 @@ void I_Quit (void)
 #if ORIGCODE
     SDL_Quit();
 
-    exit(0);
+    //IGNORE exit(0);
 #endif
 }
 
@@ -271,7 +273,8 @@ void I_Quit (void)
 
 static int ZenityAvailable(void)
 {
-    return system(ZENITY_BINARY " --help >/dev/null 2>&1") == 0;
+    // return system(ZENITY_BINARY " --help >/dev/null 2>&1") == 0;
+    return 0;
 }
 
 // Escape special characters in the given string so that they can be
@@ -339,8 +342,9 @@ static int ZenityErrorBox(char *message)
     M_snprintf(errorboxpath, errorboxpath_size, "%s --error --text=%s",
                ZENITY_BINARY, escaped_message);
 
-    result = system(errorboxpath);
-
+    // result = system(errorboxpath);
+    result = 0;
+    
     free(errorboxpath);
     free(escaped_message);
 
@@ -365,9 +369,10 @@ void I_Error (char *error, ...)
 
     if (already_quitting)
     {
-        fprintf(stderr, "Warning: recursive call to I_Error detected.\n");
+        // fprintf(stderr, "Warning: recursive call to I_Error detected.\n");
+        printf("Warning: recursive call to I_Error detected.\n");
 #if ORIGCODE
-        exit(-1);
+        //IGNORE exit(-1);
 #endif
     }
     else
@@ -378,15 +383,20 @@ void I_Error (char *error, ...)
     // Message first.
     va_start(argptr, error);
     //fprintf(stderr, "\nError: ");
-    vfprintf(stderr, error, argptr);
-    fprintf(stderr, "\n\n");
+    // vfprintf(stderr, error, argptr);
+    // vprintf(error, argptr);
+    // fprintf(stderr, "\n\n");
+    
+    // Fix I error!
+    vsnprintf(msgbuf, sizeof(msgbuf), error, argptr);
+    printf("\nError: %s\n\n", msgbuf);
     va_end(argptr);
-    fflush(stderr);
+    // fflush(stderr);
 
     // Write a copy of the message into buffer.
     va_start(argptr, error);
     memset(msgbuf, 0, sizeof(msgbuf));
-    M_vsnprintf(msgbuf, sizeof(msgbuf), error, argptr);
+    // M_vsnprintf(msgbuf, sizeof(msgbuf), error, argptr);
     va_end(argptr);
 
     // Shutdown. Here might be other errors.
@@ -451,7 +461,7 @@ void I_Error (char *error, ...)
 #elif defined(__DJGPP__)
     {
         printf("%s\n", msgbuf);
-        exit(-1);
+        //IGNORE exit(-1);
     }
 
 #else
@@ -464,7 +474,7 @@ void I_Error (char *error, ...)
 #if ORIGCODE
     SDL_Quit();
 
-    exit(-1);
+    //IGNORE exit(-1);
 #else
     while (true)
     {

@@ -16,7 +16,7 @@
 //
 
 
-#include <ctype.h>
+#include "ctype.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "string.h" // #include <string.h>
@@ -87,13 +87,13 @@ static void LoadResponseFile(int argv_index)
     response_filename = myargv[argv_index] + 1;
 
     // Read the response file into memory
-    handle = fopen(response_filename, "rb");
+    //IGNORE handle = fopen(response_filename, "rb");
 
     if (handle == NULL)
     {
         printf ("\nNo such response file!");
 #if ORIGCODE
-        exit(1);
+       //IGNORE exit(1);
 #endif
     }
 
