@@ -96,13 +96,7 @@ char*		spritename;
 // R_InstallSpriteLump
 // Local function for R_InitSprites.
 //
-void
-R_InstallSpriteLump
-( int		lump,
-  unsigned	frame,
-  unsigned	rotation,
-  boolean	flipped )
-{
+void R_InstallSpriteLump(int lump, unsigned frame, unsigned rotation, boolean flipped) {
     int		r;
 	
     if (frame >= 29 || rotation > 8)
@@ -119,9 +113,10 @@ R_InstallSpriteLump
 	    I_Error ("R_InitSprites: Sprite %s frame %c has "
 		     "multip rot=0 lump", spritename, 'A'+frame);
 
+    //TODO: FIX ERROR ON THIS LINE
 	if (sprtemp[frame].rotate == true)
-	    // I_Error ("R_InitSprites: Sprite %s frame %c has rotations "
-		//      "and a rot=0 lump", spritename, 'A'+frame);
+	    I_Error ("R_InitSprites: Sprite %s frame %c has rotations "
+		     "and a rot=0 lump", spritename, 'A'+frame);
 			
 	sprtemp[frame].rotate = false;
 	for (r=0 ; r<8 ; r++)
@@ -132,10 +127,11 @@ R_InstallSpriteLump
 	return;
     }
 	
+    //TODO: LOOK AT THIS LATER I JUST COMMENTED IT OUT
     // the lump is only used for one rotation
     if (sprtemp[frame].rotate == false)
-	// I_Error ("R_InitSprites: Sprite %s frame %c has rotations "
-	// 	 "and a rot=0 lump", spritename, 'A'+frame);
+	I_Error ("R_InitSprites: Sprite %s frame %c has rotations "
+		 "and a rot=0 lump", spritename, 'A'+frame);
 		
     sprtemp[frame].rotate = true;
 
@@ -149,9 +145,6 @@ R_InstallSpriteLump
     sprtemp[frame].lump[rotation] = lump - firstspritelump;
     sprtemp[frame].flip[rotation] = (byte)flipped;
 }
-
-
-
 
 //
 // R_InitSpriteDefs
@@ -206,30 +199,27 @@ void R_InitSpriteDefs (char** namelist)
 	
 	// scan the lumps,
 	//  filling in the frames for whatever is found
-	for (l=start+1 ; l<end ; l++)
-	{
-	    if (!strncasecmp(lumpinfobm[l].name, spritename, 4))
-	    {
-		frame = lumpinfobm[l].name[4] - 'A';
-		rotation = lumpinfobm[l].name[5] - '0';
+    for (l = start + 1; l < end; l++) {
+        if (!strncasecmp(lumpinfobm[l].name, spritename, 4)) {
+            frame = lumpinfobm[l].name[4] - 'A';
+            rotation = lumpinfobm[l].name[5] - '0';
 
-		if (modifiedgame)
-		    patched = W_GetNumForName (lumpinfobm[l].name);
-		else
-		    patched = l;
+            if (modifiedgame)
+                patched = W_GetNumForName(lumpinfobm[l].name);
+            else
+                patched = l;
 
-		R_InstallSpriteLump (patched, frame, rotation, false);
+            R_InstallSpriteLump(patched, frame, rotation, false);
 
-		if (lumpinfobm[l].name[6])
-		{
-		    frame = lumpinfobm[l].name[6] - 'A';
-		    rotation = lumpinfobm[l].name[7] - '0';
-		    R_InstallSpriteLump (l, frame, rotation, true);
-		}
-	    }
-	}
-	
-	// check the frames that were found for completeness
+            if (lumpinfobm[l].name[6]) {
+                frame = lumpinfobm[l].name[6] - 'A';
+                rotation = lumpinfobm[l].name[7] - '0';
+                R_InstallSpriteLump(l, frame, rotation, true);
+            }
+        }
+    }
+
+    // check the frames that were found for completeness
 	if (maxframe == -1)
 	{
 	    sprites[i].numframes = 0;

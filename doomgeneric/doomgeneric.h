@@ -5,11 +5,11 @@
 #include <stdint.h>
 
 #ifndef DOOMGENERIC_RESX
-#define DOOMGENERIC_RESX 640
+#define DOOMGENERIC_RESX 320
 #endif  // DOOMGENERIC_RESX
 
 #ifndef DOOMGENERIC_RESY
-#define DOOMGENERIC_RESY 400
+#define DOOMGENERIC_RESY 200
 #endif  // DOOMGENERIC_RESY
 
 
@@ -20,6 +20,7 @@ typedef uint8_t pixel_t;
 #else  // CMAP256
 
 typedef uint32_t pixel_t;
+typedef pixel_t color_t;
 
 #endif  // CMAP256
 

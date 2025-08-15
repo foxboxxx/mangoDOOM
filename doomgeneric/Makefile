@@ -51,7 +51,7 @@ SRC_C = doomgeneric_mango.c strings_extension.c malloc_extension.c ctype.c dummy
 		p_tick.c p_user.c r_bsp.c r_data.c r_draw.c r_main.c r_plane.c r_segs.c \
 		r_sky.c r_things.c sha1.c sounds.c statdump.c st_lib.c st_stuff.c s_sound.c\
 		tables.c v_video.c wi_stuff.c w_checksum.c w_file.c w_main.c w_wad.c \
-		z_zone.c w_file_stdc.c i_input.c i_video.c doomgeneric.c doom_wad.c 
+		z_zone.c w_file_stdc.c i_input.c i_video.c doomgeneric.c doomu_wad.c 
 		
 OBJS += $(addprefix $(OBJDIR)/, $(SRC_C:.c=.o))
 
@@ -73,6 +73,7 @@ $(OBJDIR):
 	mkdir -p $(OBJDIR)
 
 run: $(OUTPUT).bin
+	rm $(OUTPUT).elf
 	mango-run $<
 
 debug: $(OUTPUT).debug

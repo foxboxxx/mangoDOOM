@@ -794,6 +794,7 @@ P_SetupLevel
     leveltime = 0;
 	
     // note: most of this ordering is important	
+    printf("%s: Preloads\n", __FUNCTION__);
     P_LoadBlockMap (lumpnum+ML_BLOCKMAP);
     P_LoadVertexes (lumpnum+ML_VERTEXES);
     P_LoadSectors (lumpnum+ML_SECTORS);
@@ -827,12 +828,14 @@ P_SetupLevel
     iquehead = iquetail = 0;		
 	
     // set up world state
+    printf("%s: Setting up world\n", __FUNCTION__);
     P_SpawnSpecials ();
 	
     // build subsector connect matrix
     //	UNUSED P_ConnectSubsectors ();
 
     // preload graphics
+
     if (precache)
 	R_PrecacheLevel ();
 

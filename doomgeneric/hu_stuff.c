@@ -286,18 +286,25 @@ char *mapnames_commercial[] =
 void HU_Init(void)
 {
 
-    int		i;
-    int		j;
-    char	buffer[9];
+    int i;
+    int j;
+    char buffer[9];
 
     // load the heads-up font
     j = HU_FONTSTART;
-    for (i=0;i<HU_FONTSIZE;i++)
-    {
-	DEH_snprintf(buffer, 9, "STCFN%d", j++);
-	hu_font[i] = (patch_t *) W_CacheLumpName(buffer, PU_STATIC);
+    for (i = 0; i < HU_FONTSIZE; i++) {
+        // DEH_snprintf(buffer, 9, "STCFN%.3d", j++);
+        char fix[4];
+        fix[0] = (j / 100) % 10 + '0';
+        fix[1] = (j / 10) % 10 + '0';
+        fix[2] = (j / 1) % 10 + '0';
+        fix[3] = '\0';
+        
+        DEH_snprintf(buffer, 9, "STCFN%s", fix);
+        j++;
+        // DEH_snprintf(buffer, 9, "STCFN%.3d", j++);
+        hu_font[i] = (patch_t *)W_CacheLumpName(buffer, PU_STATIC);
     }
-
 }
 
 void HU_Stop(void)

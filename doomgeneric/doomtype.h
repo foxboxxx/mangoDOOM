@@ -65,7 +65,7 @@ typedef bool boolean;
 //     true	= 1,
 // 	undef	= 0xFFFFFFFF
 // } boolean;
-typedef bool boolean;
+typedef int boolean;
 
 #endif
 

@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include "string.h" // #include <string.h>
 #include "printf.h"
+#include "mango.h"
 
 #include <stdarg.h>
 
@@ -362,124 +363,131 @@ static boolean already_quitting = false;
 
 void I_Error (char *error, ...)
 {
+
+
     char msgbuf[512];
     va_list argptr;
     atexit_listentry_t *entry;
     boolean exit_gui_popup;
-
-    if (already_quitting)
-    {
-        // fprintf(stderr, "Warning: recursive call to I_Error detected.\n");
-        printf("Warning: recursive call to I_Error detected.\n");
-#if ORIGCODE
-        //IGNORE exit(-1);
-#endif
-    }
-    else
-    {
-        already_quitting = true;
-    }
-
-    // Message first.
     va_start(argptr, error);
-    //fprintf(stderr, "\nError: ");
-    // vfprintf(stderr, error, argptr);
-    // vprintf(error, argptr);
-    // fprintf(stderr, "\n\n");
-    
-    // Fix I error!
     vsnprintf(msgbuf, sizeof(msgbuf), error, argptr);
-    printf("\nError: %s\n\n", msgbuf);
+    printf("DOOM Error called: %s\n\n", msgbuf);
     va_end(argptr);
-    // fflush(stderr);
+    mango_abort();
 
-    // Write a copy of the message into buffer.
-    va_start(argptr, error);
-    memset(msgbuf, 0, sizeof(msgbuf));
-    // M_vsnprintf(msgbuf, sizeof(msgbuf), error, argptr);
-    va_end(argptr);
+//     if (already_quitting)
+//     {
+//         // fprintf(stderr, "Warning: recursive call to I_Error detected.\n");
+//         printf("Warning: recursive call to I_Error detected.\n");
+// #if ORIGCODE
+//         //IGNORE exit(-1);
+// #endif
+//     }
+//     else
+//     {
+//         already_quitting = true;
+//     }
 
-    // Shutdown. Here might be other errors.
+//     // Message first.
+//     va_start(argptr, error);
+//     //fprintf(stderr, "\nError: ");
+//     // vfprintf(stderr, error, argptr);
+//     // vprintf(error, argptr);
+//     // fprintf(stderr, "\n\n");
+    
+//     // Fix I error!
+//     vsnprintf(msgbuf, sizeof(msgbuf), error, argptr);
+//     printf("\nError: %s\n\n", msgbuf);
+//     va_end(argptr);
+//     // fflush(stderr);
 
-    entry = exit_funcs;
+//     // Write a copy of the message into buffer.
+//     va_start(argptr, error);
+//     memset(msgbuf, 0, sizeof(msgbuf));
+//     // M_vsnprintf(msgbuf, sizeof(msgbuf), error, argptr);
+//     va_end(argptr);
 
-    while (entry != NULL)
-    {
-        if (entry->run_on_error)
-        {
-            entry->func();
-        }
+//     // Shutdown. Here might be other errors.
 
-        entry = entry->next;
-    }
+//     entry = exit_funcs;
 
-    exit_gui_popup = !M_ParmExists("-nogui");
+//     while (entry != NULL)
+//     {
+//         if (entry->run_on_error)
+//         {
+//             entry->func();
+//         }
 
-    // Pop up a GUI dialog box to show the error message, if the
-    // game was not run from the console (and the user will
-    // therefore be unable to otherwise see the message).
-    if (exit_gui_popup && !I_ConsoleStdout())
-#ifdef _WIN32
-    {
-        wchar_t wmsgbuf[512];
+//         entry = entry->next;
+//     }
 
-        MultiByteToWideChar(CP_ACP, 0,
-                            msgbuf, strlen(msgbuf) + 1,
-                            wmsgbuf, sizeof(wmsgbuf));
+//     exit_gui_popup = !M_ParmExists("-nogui");
 
-        MessageBoxW(NULL, wmsgbuf, L"", MB_OK);
-    }
-#elif defined(__MACOSX__)
-    {
-        CFStringRef message;
-	int i;
+//     // Pop up a GUI dialog box to show the error message, if the
+//     // game was not run from the console (and the user will
+//     // therefore be unable to otherwise see the message).
+//     if (exit_gui_popup && !I_ConsoleStdout())
+// #ifdef _WIN32
+//     {
+//         wchar_t wmsgbuf[512];
 
-	// The CoreFoundation message box wraps text lines, so replace
-	// newline characters with spaces so that multiline messages
-	// are continuous.
+//         MultiByteToWideChar(CP_ACP, 0,
+//                             msgbuf, strlen(msgbuf) + 1,
+//                             wmsgbuf, sizeof(wmsgbuf));
 
-	for (i = 0; msgbuf[i] != '\0'; ++i)
-        {
-            if (msgbuf[i] == '\n')
-            {
-                msgbuf[i] = ' ';
-            }
-        }
+//         MessageBoxW(NULL, wmsgbuf, L"", MB_OK);
+//     }
+// #elif defined(__MACOSX__)
+//     {
+//         CFStringRef message;
+// 	int i;
 
-        message = CFStringCreateWithCString(NULL, msgbuf,
-                                            kCFStringEncodingUTF8);
+// 	// The CoreFoundation message box wraps text lines, so replace
+// 	// newline characters with spaces so that multiline messages
+// 	// are continuous.
 
-        CFUserNotificationDisplayNotice(0,
-                                        kCFUserNotificationCautionAlertLevel,
-                                        NULL,
-                                        NULL,
-                                        NULL,
-                                        CFSTR(PACKAGE_STRING),
-                                        message,
-                                        NULL);
-    }
-#elif defined(__DJGPP__)
-    {
-        printf("%s\n", msgbuf);
-        //IGNORE exit(-1);
-    }
+// 	for (i = 0; msgbuf[i] != '\0'; ++i)
+//         {
+//             if (msgbuf[i] == '\n')
+//             {
+//                 msgbuf[i] = ' ';
+//             }
+//         }
 
-#else
-    {
-        ZenityErrorBox(msgbuf);
-    }
-#endif
+//         message = CFStringCreateWithCString(NULL, msgbuf,
+//                                             kCFStringEncodingUTF8);
 
-    // abort();
-#if ORIGCODE
-    SDL_Quit();
+//         CFUserNotificationDisplayNotice(0,
+//                                         kCFUserNotificationCautionAlertLevel,
+//                                         NULL,
+//                                         NULL,
+//                                         NULL,
+//                                         CFSTR(PACKAGE_STRING),
+//                                         message,
+//                                         NULL);
+//     }
+// #elif defined(__DJGPP__)
+//     {
+//         printf("%s\n", msgbuf);
+//         //IGNORE exit(-1);
+//     }
 
-    //IGNORE exit(-1);
-#else
-    while (true)
-    {
-    }
-#endif
+// #else
+//     {
+//         ZenityErrorBox(msgbuf);
+//     }
+// #endif
+
+//     // abort();
+// #if ORIGCODE
+//     SDL_Quit();
+
+//     //IGNORE exit(-1);
+// #else
+//     while (true)
+//     {
+//     }
+// #endif
 }
 
 //

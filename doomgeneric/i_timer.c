@@ -18,6 +18,7 @@
 
 #include "i_timer.h"
 #include "doomtype.h"
+#include "timer.h"
 
 #include "doomgeneric.h"
 
@@ -32,7 +33,7 @@
 // returns time in 1/35th second tics
 //
 
-static uint32_t basetime = 0;
+static long long basetime = 0;
 
 
 int I_GetTicks(void)
@@ -43,11 +44,12 @@ int I_GetTicks(void)
 int  I_GetTime (void)
 {
     uint32_t ticks;
-
     ticks = I_GetTicks();
 
-    if (basetime == 0)
-        basetime = ticks;
+    // long long temp = I_GetTicks();
+    // int ticks = (int)(temp / 1000);
+
+    if (basetime == 0) basetime = ticks;
 
     ticks -= basetime;
 
@@ -58,15 +60,17 @@ int  I_GetTime (void)
 //
 // Same as I_GetTime, but returns time in milliseconds
 //
-
-int I_GetTimeMS(void)
+#include "printf.h"
+long long I_GetTimeMS(void)
 {
     uint32_t ticks;
-
     ticks = I_GetTicks();
+    // long long temp = I_GetTicks();
+    // long long ticks = (long long)(temp / 1000);
+    // printf("ticks: %ld\n", ticks);
+    // printf("basetime = %ld\n", basetime);
 
-    if (basetime == 0)
-        basetime = ticks;
+    if (basetime == 0) basetime = ticks;
 
     return ticks - basetime;
 }

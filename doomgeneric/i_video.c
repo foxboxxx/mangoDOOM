@@ -162,6 +162,7 @@ void cmap_to_fb(uint8_t *out, uint8_t *in, int in_pixels)
     for (i = 0; i < in_pixels; i++)
     {
         c = colors[*in];  // R:8 G:8 B:8
+        // printf("Color: %x, %x, %x, %x, Index: %d\n", c.r, c.g, c.b, c.a, *in);
 
         if (s_Fb.bits_per_pixel == 16)
         {
@@ -181,7 +182,9 @@ void cmap_to_fb(uint8_t *out, uint8_t *in, int in_pixels)
         else if (s_Fb.bits_per_pixel == 32)
         {
             // Assuming RGBA8888
-            pix = (c.r << s_Fb.red.offset) |
+            pix = 
+                //   (0xff << s_Fb.transp.offset) |
+                  (c.r << s_Fb.red.offset) |
                   (c.g << s_Fb.green.offset) |
                   (c.b << s_Fb.blue.offset);
 
@@ -219,16 +222,16 @@ void I_InitGraphics (void)
 
 #else  // CMAP256
 
-	gfxmodeparm = M_CheckParmWithArgs("-gfxmode", 1);
+	// gfxmodeparm = M_CheckParmWithArgs("-gfxmode", 1);
 
-	if (gfxmodeparm) {
-		mode = myargv[gfxmodeparm + 1];
-	}
-	else {
+	// if (gfxmodeparm) {
+	// 	mode = myargv[gfxmodeparm + 1];
+	// }
+	// else {
 		// default to rgba8888 like the old behavior, for compatibility
 		// maybe could warn here?
 		mode = "rgba8888";
-	}
+	// }
 
 	if (strcmp(mode, "rgba8888") == 0) {
 		// default mode
@@ -289,6 +292,9 @@ void I_InitGraphics (void)
     /* Allocate screen to draw to */
 	I_VideoBuffer = (byte*)Z_Malloc (SCREENWIDTH * SCREENHEIGHT, PU_STATIC, NULL);  // For DOOM to draw on
 
+    // TODO: remove later --> debugging to see if I_VideoBuffer actually changes
+    // memset(I_VideoBuffer, 0x7e, SCREENWIDTH * SCREENHEIGHT);
+
 	screenvisible = true;
 
     extern void I_InitInput(void);
@@ -320,6 +326,8 @@ void I_UpdateNoBlit (void)
 
 void I_FinishUpdate (void)
 {
+    // V_RestoreBuffer();
+
     int y;
     int x_offset, y_offset, x_offset_end;
     unsigned char *line_in, *line_out;
@@ -330,12 +338,18 @@ void I_FinishUpdate (void)
     /* 2048 =s_Fb width, 320 screenwidth */
     y_offset     = (((s_Fb.yres - (SCREENHEIGHT * fb_scaling)) * s_Fb.bits_per_pixel/8)) / 2;
     x_offset     = (((s_Fb.xres - (SCREENWIDTH  * fb_scaling)) * s_Fb.bits_per_pixel/8)) / 2; // XXX: siglent FB hack: /4 instead of /2, since it seems to handle the resolution in a funny way
-    //x_offset     = 0;
+    // x_offset     = 0;
     x_offset_end = ((s_Fb.xres - (SCREENWIDTH  * fb_scaling)) * s_Fb.bits_per_pixel/8) - x_offset;
 
     /* DRAW SCREEN */
     line_in  = (unsigned char *) I_VideoBuffer;
     line_out = (unsigned char *) DG_ScreenBuffer;
+
+    // printf("Checking I_VideoBuffer: %02x %02x %02x %02x\n", I_VideoBuffer[0], I_VideoBuffer[1], I_VideoBuffer[2], I_VideoBuffer[3]);
+    // print entire buffer:
+    // for (int i = 0; i < DOOMGENERIC_RESX * DOOMGENERIC_RESY; i++) {
+    //     printf("[0x%02x]", I_VideoBuffer[i]);
+    // }
 
     y = SCREENHEIGHT;
 
@@ -359,8 +373,8 @@ void I_FinishUpdate (void)
             }
 #else
             //cmap_to_rgb565((void*)line_out, (void*)line_in, SCREENWIDTH);
-            cmap_to_fb((void*)line_out, (void*)line_in, SCREENWIDTH);
 #endif
+            cmap_to_fb((void*)line_out, (void*)line_in, SCREENWIDTH);
             line_out += (SCREENWIDTH * fb_scaling * (s_Fb.bits_per_pixel/8)) + x_offset_end;
         }
         line_in += SCREENWIDTH;
@@ -405,8 +419,15 @@ void I_SetPalette (byte* palette)
     /* performance boost:
      * map to the right pixel format over here! */
 
+    //  for (int i = 0; i < 256; i++) {
+    //     printf("%d: %x, %x, %x\n", i, gammatable[usegamma][palette[i*3]], gammatable[usegamma][palette[i*3 + 1]], gammatable[usegamma][palette[i*3 + 2]]);
+    //  }
+    //  printf("%s: Gamma num: %d\n", __FUNCTION__, usegamma);
     for (i=0; i<256; ++i ) {
-        colors[i].a = 0;
+        // colors[i].a = 0;
+        // colors[i].r = 0xff; //gammatable[usegamma][*palette++];
+        // colors[i].g = 0x00; //gammatable[usegamma][*palette++];
+        // colors[i].b = 0x00; //gammatable[usegamma][*palette++];
         colors[i].r = gammatable[usegamma][*palette++];
         colors[i].g = gammatable[usegamma][*palette++];
         colors[i].b = gammatable[usegamma][*palette++];

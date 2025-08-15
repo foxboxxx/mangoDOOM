@@ -933,69 +933,62 @@ void ST_Ticker (void)
 
 static int st_palette = 0;
 
-void ST_doPaletteStuff(void)
-{
+void ST_doPaletteStuff(void) {
 
-    int		palette;
-    byte*	pal;
-    int		cnt;
-    int		bzc;
+    int palette;
+    byte *pal;
+    int cnt;
+    int bzc;
 
     cnt = plyr->damagecount;
 
-    if (plyr->powers[pw_strength])
-    {
-	// slowly fade the berzerk out
-  	bzc = 12 - (plyr->powers[pw_strength]>>6);
+    if (plyr->powers[pw_strength]) {
+        // slowly fade the berzerk out
+        bzc = 12 - (plyr->powers[pw_strength] >> 6);
 
-	if (bzc > cnt)
-	    cnt = bzc;
-    }
-	
-    if (cnt)
-    {
-	palette = (cnt+7)>>3;
-	
-	if (palette >= NUMREDPALS)
-	    palette = NUMREDPALS-1;
-
-	palette += STARTREDPALS;
+        if (bzc > cnt)
+            cnt = bzc;
     }
 
-    else if (plyr->bonuscount)
-    {
-	palette = (plyr->bonuscount+7)>>3;
+    if (cnt) {
+        palette = (cnt + 7) >> 3;
 
-	if (palette >= NUMBONUSPALS)
-	    palette = NUMBONUSPALS-1;
+        if (palette >= NUMREDPALS)
+            palette = NUMREDPALS - 1;
 
-	palette += STARTBONUSPALS;
+        palette += STARTREDPALS;
     }
 
-    else if ( plyr->powers[pw_ironfeet] > 4*32
-	      || plyr->powers[pw_ironfeet]&8)
-	palette = RADIATIONPAL;
+    else if (plyr->bonuscount) {
+        palette = (plyr->bonuscount + 7) >> 3;
+
+        if (palette >= NUMBONUSPALS)
+            palette = NUMBONUSPALS - 1;
+
+        palette += STARTBONUSPALS;
+    }
+
+    else if (plyr->powers[pw_ironfeet] > 4 * 32 ||
+             plyr->powers[pw_ironfeet] & 8)
+        palette = RADIATIONPAL;
     else
-	palette = 0;
+        palette = 0;
 
     // In Chex Quest, the player never sees red.  Instead, the
     // radiation suit palette is used to tint the screen green,
     // as though the player is being covered in goo by an
     // attacking flemoid.
 
-    if (gameversion == exe_chex
-     && palette >= STARTREDPALS && palette < STARTREDPALS + NUMREDPALS)
-    {
+    if (gameversion == exe_chex && palette >= STARTREDPALS &&
+        palette < STARTREDPALS + NUMREDPALS) {
         palette = RADIATIONPAL;
     }
 
-    if (palette != st_palette)
-    {
-	st_palette = palette;
-	pal = (byte *) W_CacheLumpNum (lu_palette, PU_CACHE)+palette*768;
-	I_SetPalette (pal);
+    if (palette != st_palette) {
+        st_palette = palette;
+        pal = (byte *)W_CacheLumpNum(lu_palette, PU_CACHE) + palette * 768;
+        I_SetPalette(pal);
     }
-
 }
 
 void ST_drawWidgets(boolean refresh)

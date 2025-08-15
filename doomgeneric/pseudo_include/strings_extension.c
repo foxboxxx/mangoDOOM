@@ -3,6 +3,7 @@
 #include "printf.h"
 #include "malloc.h"
 #include "ctype.h"
+#include "uart.h"
 
 int strcasecmp(const char *s1, const char *s2) {
     while (*s1 && *s2) {
@@ -70,6 +71,7 @@ char *strdup(const char *s) {
 
     #undef memcpy
     memcpy(duped, s, size);
+    // duped[size] = '\0';
     return duped;
 }
 
@@ -120,8 +122,9 @@ int puts(const char *s) {
 }
 
 int putchar(int ch) {
-    printf("%c\n", ch);
-    return ch;
+    // printf("%c\n", ch);
+    // return ch;
+    return uart_putchar(ch);
 }
 
 #undef memmove

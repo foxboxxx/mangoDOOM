@@ -152,8 +152,8 @@ static void SaveGameSettings(net_gamesettings_t *settings)
     settings->respawn_monsters = respawnparm;
     settings->timelimit = timelimit;
 
-    settings->lowres_turn = M_CheckParm("-record") > 0
-                         && M_CheckParm("-longtics") == 0;
+    settings->lowres_turn = 0; //M_CheckParm("-record") > 0
+                         //&& M_CheckParm("-longtics") == 0;
 }
 
 static void InitConnectData(net_connect_data_t *connect_data)

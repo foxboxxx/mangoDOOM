@@ -151,7 +151,8 @@ void I_InitSound(boolean use_sfx_prefix)
     // Disable all sound output.
     //
 
-    nosound = M_CheckParm("-nosound") > 0;
+    // nosound = M_CheckParm("-nosound") > 0;
+    nosound = true;
 
     //!
     // @vanilla
@@ -159,7 +160,8 @@ void I_InitSound(boolean use_sfx_prefix)
     // Disable sound effects. 
     //
 
-    nosfx = M_CheckParm("-nosfx") > 0;
+    // nosfx = M_CheckParm("-nosfx") > 0;
+    nosfx = true;
 
     //!
     // @vanilla
@@ -167,7 +169,8 @@ void I_InitSound(boolean use_sfx_prefix)
     // Disable music.
     //
 
-    nomusic = M_CheckParm("-nomusic") > 0;
+    // nomusic = M_CheckParm("-nomusic") > 0;
+    nomusic = true;
 
     // Initialize the sound and music subsystems.
 

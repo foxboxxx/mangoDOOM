@@ -599,6 +599,9 @@ void V_Init (void)
     // no-op!
     // There used to be separate screens that could be drawn to; these are
     // now handled in the upper layers.
+    // dest_screen = I_VideoBuffer;
+    // V_RestoreBuffer();
+    
 }
 
 // Set the buffer that the code draws to.

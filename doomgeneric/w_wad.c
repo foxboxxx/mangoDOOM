@@ -349,7 +349,7 @@ int W_CheckNumForName (char* name)
         {
             if (!strncasecmp(lump_p->name, name, 8))
             {
-                // printf("%s: Found %s at index %ld!\n", __FUNCTION__, name, lump_p - lumpinfobm);
+                printf("%s: Found %s at index %ld!\n", __FUNCTION__, name, lump_p - lumpinfobm);
                 return lump_p - lumpinfobm;
             }
         }

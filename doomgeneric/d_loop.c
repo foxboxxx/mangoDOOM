@@ -94,7 +94,7 @@ int		ticdup;
 fixed_t         offsetms;
 
 // Use new client syncronisation code
-
+//TODO: CHANGE BACK TO TRUE LATER?
 static boolean  new_sync = true;
 
 // Callback functions for loop code.
@@ -118,9 +118,10 @@ static int player_class;
 
 static int GetAdjustedTime(void)
 {
-    int time_ms;
+    long long time_ms;
 
     time_ms = I_GetTimeMS();
+    // printf("%s: Adjusted time: %ld\n", __FUNCTION__, time_ms);
 
     if (new_sync)
     {
@@ -129,26 +130,31 @@ static int GetAdjustedTime(void)
 
         time_ms += (offsetms / FRACUNIT);
     }
-
-    return (time_ms * TICRATE) / 1000;
+    // printf("%s: Ret time: %ld\n", __FUNCTION__, (time_ms / 1000) * TICRATE);
+    return (time_ms / 1000) * TICRATE;
 }
 
 static boolean BuildNewTic(void)
 {
+    // printf("%s: Start\n", __FUNCTION__);
     int	gameticdiv;
     ticcmd_t cmd;
 
     gameticdiv = gametic/ticdup;
 
+        // printf("%s: Start Tic & Process events\n", __FUNCTION__);
     I_StartTic ();
     loop_interface->ProcessEvents();
 
     // Always run the menu
 
+    // printf("%s: Run menu\n", __FUNCTION__);
     loop_interface->RunMenu();
 
     if (drone)
     {
+            // printf("%s: Drone mode\n", __FUNCTION__);
+
         // In drone mode, do not generate any ticcmds.
 
         return false;
@@ -224,6 +230,8 @@ void NetUpdate (void)
     // check time
     nowtime = GetAdjustedTime() / ticdup;
     newtics = nowtime - lasttime;
+    // printf("%s: nowtime = %d, lasttime = %d\n", __FUNCTION__, nowtime, lasttime);
+    // printf("%s: newtics: %d\n", __FUNCTION__, newtics);
 
     lasttime = nowtime;
 
@@ -304,7 +312,10 @@ void D_ReceiveTic(ticcmd_t *ticcmds, boolean *players_mask)
 
 void D_StartGameLoop(void)
 {
-    lasttime = GetAdjustedTime() / ticdup;
+    int adjusted_time = GetAdjustedTime();
+    printf("%s: adjtime: %d, ticdup: %d\n", __FUNCTION__, adjusted_time ,ticdup);
+    lasttime =  adjusted_time / ticdup;
+    printf("%s: lasttime = %d\n", __FUNCTION__, lasttime);
 }
 
 #if ORIGCODE
@@ -703,15 +714,14 @@ static void SinglePlayerClear(ticcmd_set_t *set)
 // TryRunTics
 //
 
-void TryRunTics (void)
-{
-    int	i;
-    int	lowtic;
-    int	entertic;
+void TryRunTics(void) {
+    int i;
+    int lowtic;
+    int entertic;
     static int oldentertics;
     int realtics;
-    int	availabletics;
-    int	counts;
+    int availabletics;
+    int counts;
 
     // get real tics
     entertic = I_GetTime() / ticdup;
@@ -721,30 +731,29 @@ void TryRunTics (void)
     // in singletics mode, run a single tic every time this function
     // is called.
 
-    if (singletics)
-    {
+    if (singletics) {
+        // printf("%s: Single Tics Mode\n", __FUNCTION__);
         BuildNewTic();
-    }
-    else
-    {
-        NetUpdate ();
+    } else {
+        // printf("%s: New Update Mode\n", __FUNCTION__);
+        NetUpdate();
     }
 
     lowtic = GetLowTic();
 
-    availabletics = lowtic - gametic/ticdup;
+    availabletics = lowtic - gametic / ticdup;
+    // printf("%s: Available Ticks: %d\n", __FUNCTION__, availabletics);
+
 
     // decide how many tics to run
 
-    if (new_sync)
-    {
-	counts = availabletics;
-    }
-    else
-    {
+    if (new_sync) {
+        // printf("%s: New Sync\n", __FUNCTION__);
+        counts = availabletics;
+    } else {
         // decide how many tics to run
-        if (realtics < availabletics-1)
-            counts = realtics+1;
+        if (realtics < availabletics - 1)
+            counts = realtics + 1;
         else if (realtics < availabletics)
             counts = realtics;
         else
@@ -753,71 +762,65 @@ void TryRunTics (void)
         if (counts < 1)
             counts = 1;
 
-        if (net_client_connected)
-        {
+        if (net_client_connected) {
             OldNetSync();
         }
     }
 
     if (counts < 1)
-	counts = 1;
+        counts = 1;
 
     // wait for new tics if needed
 
-    while (!PlayersInGame() || lowtic < gametic/ticdup + counts)
-    {
-	NetUpdate ();
+    while (!PlayersInGame() || lowtic < gametic / ticdup + counts) {
+        NetUpdate();
+        // printf("%s: Net Update!\n", __FUNCTION__);
 
         lowtic = GetLowTic();
 
-	if (lowtic < gametic/ticdup)
-	    I_Error ("TryRunTics: lowtic < gametic");
+        if (lowtic < gametic / ticdup)
+            I_Error("TryRunTics: lowtic < gametic");
 
         // Don't stay in this loop forever.  The menu is still running,
         // so return to update the screen
 
-	if (I_GetTime() / ticdup - entertic > 0)
-	{
-	    return;
-	}
+        if (I_GetTime() / ticdup - entertic > 0) {
+            return;
+        }
 
         I_Sleep(1);
     }
 
     // run the count * ticdup dics
-    while (counts--)
-    {
+    while (counts--) {
         ticcmd_set_t *set;
 
-        if (!PlayersInGame())
-        {
+        if (!PlayersInGame()) {
             return;
         }
 
         set = &ticdata[(gametic / ticdup) % BACKUPTICS];
 
-        if (!net_client_connected)
-        {
+        if (!net_client_connected) {
             SinglePlayerClear(set);
         }
-
-	for (i=0 ; i<ticdup ; i++)
-	{
-            if (gametic/ticdup > lowtic)
-                I_Error ("gametic>lowtic");
+        printf("%s: Counts Loop\n", __FUNCTION__);
+        for (i = 0; i < ticdup; i++) {
+            if (gametic / ticdup > lowtic)  I_Error("gametic>lowtic");
 
             memcpy(local_playeringame, set->ingame, sizeof(local_playeringame));
 
             loop_interface->RunTic(set->cmds, set->ingame);
-	    gametic++;
+            gametic++;
 
-	    // modify command for duplicated tics
+            // modify command for duplicated tics
 
             TicdupSquash(set);
-	}
+        }
 
-	NetUpdate ();	// check for new console commands
+        NetUpdate(); // check for new console commands
     }
+    // gametic++;
 }
 
 void D_RegisterLoopCallbacks(loop_interface_t *i)
