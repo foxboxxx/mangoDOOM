@@ -804,7 +804,7 @@ void TryRunTics(void) {
         if (!net_client_connected) {
             SinglePlayerClear(set);
         }
-        printf("%s: Counts Loop\n", __FUNCTION__);
+        // printf("%s: Counts Loop\n", __FUNCTION__);
         for (i = 0; i < ticdup; i++) {
             if (gametic / ticdup > lowtic)  I_Error("gametic>lowtic");
 

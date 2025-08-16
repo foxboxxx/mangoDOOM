@@ -34,8 +34,6 @@ extern "C" {
 void doomgeneric_Create(int argc, char **argv);
 void doomgeneric_Tick();
 
-
-//Implement below functions for your platform
 void DG_Init();
 void DG_DrawFrame();
 void DG_SleepMs(uint32_t ms);

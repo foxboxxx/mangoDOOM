@@ -27,23 +27,18 @@ OBJDUMP_FLAGS = -d --no-show-raw-insn --no-addresses --disassembler-color=termin
 GDB_FLAGS= -q --command=$$CS107E/other/gdbsim.commands
 
 # Access .c and .s source files from SHARED directory using vpath
-vpath %.c $$CS107E/../extras/src
+vpath %.c $$CS107E/../extras/src ./pseudo_include
 vpath %.s $$CS107E/../extras/src
-CFLAGS += -I$$CS107E/../extras/src
-vpath %.c ./pseudo_include
-CFLAGS += -I./pseudo_include
-
-GDB_FLAGS= -q --command=$$CS107E/other/gdbsim.commands
-
+CFLAGS += -I$$CS107E/../extras/src -I./pseudo_include
 
 # subdirectory for objects
 OBJDIR = build
 OUTPUT = doomgeneric
 
-SRC_C = doomgeneric_mango.c strings_extension.c malloc_extension.c ctype.c dummy.c am_map.c doomdef.c \
-        doomstat.c dstrings.c d_event.c d_items.c d_iwad.c d_loop.c d_main.c \
-		d_mode.c d_net.c f_finale.c f_wipe.c g_game.c hu_lib.c hu_stuff.c \
-		info.c i_cdmus.c i_endoom.c i_joystick.c i_scale.c i_sound.c i_system.c \
+SRC_C = doomgeneric_mango.c strings_extension.c malloc_extension.c ctype.c joybonnet.c i2c.c twi_driver.c\
+		dummy.c am_map.c doomdef.c doomstat.c dstrings.c d_event.c d_items.c d_iwad.c \
+		d_loop.c d_main.c d_mode.c d_net.c f_finale.c f_wipe.c g_game.c hu_lib.c \
+		hu_stuff.c info.c i_cdmus.c i_endoom.c i_joystick.c i_scale.c i_sound.c i_system.c \
 		i_timer.c memio.c m_argv.c m_bbox.c m_cheat.c m_config.c m_controls.c \
 		m_fixed.c m_menu.c m_misc.c m_random.c p_ceilng.c p_doors.c p_enemy.c \
 		p_floor.c p_inter.c p_lights.c p_map.c p_maputl.c p_mobj.c p_plats.c \
@@ -53,7 +48,7 @@ SRC_C = doomgeneric_mango.c strings_extension.c malloc_extension.c ctype.c dummy
 		tables.c v_video.c wi_stuff.c w_checksum.c w_file.c w_main.c w_wad.c \
 		z_zone.c w_file_stdc.c i_input.c i_video.c doomgeneric.c doomu_wad.c 
 		
-OBJS += $(addprefix $(OBJDIR)/, $(SRC_C:.c=.o))
+OBJS := $(addprefix $(OBJDIR)/, $(notdir $(SRC_C:.c=.o)))
 
 all: $(OUTPUT).bin
 
@@ -66,14 +61,21 @@ $(OUTPUT).elf: $(OBJS)
 $(OUTPUT).bin: $(OUTPUT).elf
 	$(CROSS_COMPILE)objcopy $< -O binary $@
 
-$(OBJDIR)/%.o: %.c | $(OBJDIR)
+vpath %.c $(CS107E)/../extras/src ./pseudo_include
+
+$(OBJDIR)/%.o: %.c
+	@mkdir -p $(OBJDIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJDIR):
-	mkdir -p $(OBJDIR)
+# $(OBJDIR)/%.o: %.c | $(OBJDIR)
+# 	$(CC) $(CFLAGS) -c $< -o $@
+
+# $(OBJDIR):
+# 	mkdir -p $(OBJDIR)
 
 run: $(OUTPUT).bin
-	rm $(OUTPUT).elf
+# prevents duping elf and bin
+	rm $(OUTPUT).elf 
 	mango-run $<
 
 debug: $(OUTPUT).debug
@@ -82,7 +84,7 @@ clean:
 	rm -rf $(OBJDIR) $(OUTPUT).elf $(OUTPUT).bin
 
 .PHONY: all run clean debug
-# .PRECIOUS: %.elf %.o
+.PRECIOUS: %.elf %.o
 
 
 # all:	 $(OUTPUT)

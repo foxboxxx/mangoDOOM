@@ -212,7 +212,7 @@ void D_Display(void) {
     // do buffered drawing
     switch (gamestate) {
     case GS_LEVEL:
-        printf("%s: Gamestate in GS_LEVEL\n", __FUNCTION__);
+        // printf("%s: Gamestate in GS_LEVEL\n", __FUNCTION__);
         if (!gametic)
             break;
         if (automapactive)
@@ -226,28 +226,28 @@ void D_Display(void) {
         break;
 
     case GS_INTERMISSION:
-        printf("%s: Gamestate in GS_INTERMISSION\n", __FUNCTION__);
+        // printf("%s: Gamestate in GS_INTERMISSION\n", __FUNCTION__);
         WI_Drawer();
         break;
 
     case GS_FINALE:
-        printf("%s: Gamestate in GS_FINALE\n", __FUNCTION__);
+        // printf("%s: Gamestate in GS_FINALE\n", __FUNCTION__);
         F_Drawer();
         break;
 
     case GS_DEMOSCREEN:
-        printf("%s: Gamestate in GS_DEMOSCREEN\n", __FUNCTION__);
+        // printf("%s: Gamestate in GS_DEMOSCREEN\n", __FUNCTION__);
         D_PageDrawer();
         break;
     }
 
     // draw buffered stuff to screen
-    printf("%s: Called I_UpdateNoBlit()\n", __FUNCTION__);
+    // printf("%s: Called I_UpdateNoBlit()\n", __FUNCTION__);
     I_UpdateNoBlit();
 
     // draw the view directly
     if (gamestate == GS_LEVEL && !automapactive && gametic) {
-        printf("%s: Called R_RenderPlayerView()\n", __FUNCTION__);
+        // printf("%s: Called R_RenderPlayerView()\n", __FUNCTION__);
         R_RenderPlayerView(&players[displayplayer]);
     }
 
@@ -312,13 +312,13 @@ void D_Display(void) {
 
     // normal update
     if (!wipe) {
-        printf("%s: Normal update\n", __FUNCTION__);
+        // printf("%s: Normal update\n", __FUNCTION__);
         I_FinishUpdate(); // page flip or blit buffer
         return;
     }
 
     // wipe update
-    printf("%s: Wipe Update\n", __FUNCTION__);
+    // printf("%s: Wipe Update\n", __FUNCTION__);
     wipe_EndScreen(0, 0, SCREENWIDTH, SCREENHEIGHT);
 
     wipestart = I_GetTime() - 1;
@@ -411,7 +411,7 @@ boolean D_GrabMouseCallback(void) {
 }
 
 void doomgeneric_Tick() {
-        printf("I_GetTime() = %d\n", I_GetTime());
+        // printf("I_GetTime() = %d\n", I_GetTime());
     // frame syncronous IO operations
     I_StartFrame();
 
@@ -421,7 +421,7 @@ void doomgeneric_Tick() {
 
     // Update display, next frame, with current state.
     if (screenvisible) {
-        printf("%s: D_Display()\n", __FUNCTION__);
+        // printf("%s: D_Display()\n", __FUNCTION__);
         D_Display();
     }
 }
@@ -453,7 +453,7 @@ void D_DoomLoop(void) {
     I_SetGrabMouseCallback(D_GrabMouseCallback);
     I_InitGraphics();
 
-        // I_SetPalette(W_CacheLumpName(DEH_String("PLAYPAL"), PU_CACHE));
+        I_SetPalette(W_CacheLumpName(DEH_String("PLAYPAL"), PU_CACHE));
 
     I_EnableLoadingDisk();
 

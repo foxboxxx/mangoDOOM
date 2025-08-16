@@ -285,12 +285,14 @@ void I_GetEvent(void)
     
 	while (DG_GetKey(&pressed, &key))
     {
+        // printf("Got event!!!\n");
         UpdateShiftStatus(pressed, key);
 
         // process event
         
         if (pressed)
         {
+            //  printf("Pressed!!!\n");
             // data1 has the key pressed, data2 has the character
             // (shift-translated, etc)
             event.type = ev_keydown;
@@ -304,6 +306,7 @@ void I_GetEvent(void)
         }
         else
         {
+            // printf("Released!!!\n");
             event.type = ev_keyup;
             event.data1 = TranslateKey(key);
 

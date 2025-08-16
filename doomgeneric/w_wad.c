@@ -349,14 +349,14 @@ int W_CheckNumForName (char* name)
         {
             if (!strncasecmp(lump_p->name, name, 8))
             {
-                printf("%s: Found %s at index %ld!\n", __FUNCTION__, name, lump_p - lumpinfobm);
+                // printf("%s: Found %s at index %ld!\n", __FUNCTION__, name, lump_p - lumpinfobm);
                 return lump_p - lumpinfobm;
             }
         }
     } 
     else
     {
-        printf("%s: No lump hash!\n", __FUNCTION__);
+        // printf("%s: No lump hash!\n", __FUNCTION__);
         // We don't have a hash table generate yet. Linear search :-(
         // 
         // scan backwards so patch lump files take precedence
@@ -365,14 +365,14 @@ int W_CheckNumForName (char* name)
         {
             if (!strncasecmp(lumpinfobm[i].name, name, 8))
             {
-                printf("%s: Found %s at index %ld!\n", __FUNCTION__, name, i);
+                // printf("%s: Found %s at index %ld!\n", __FUNCTION__, name, i);
                 return i;
             }
         }
     }
 
     // TFB. Not found.
-    printf("%s: File `%s` not found :(\n", __FUNCTION__, name);
+    // printf("%s: File `%s` not found :(\n", __FUNCTION__, name);
     return -1;
 }
 
