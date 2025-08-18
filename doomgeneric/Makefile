@@ -11,18 +11,18 @@ else
 	VB=@
 endif
 
-CC=riscv64-unknown-elf-gcc
+CC = riscv64-unknown-elf-gcc
 CROSS_COMPILE = riscv64-unknown-elf-
 
 # PRODUCTS = $(SRC_PROGRAMS:.c=.bin)
 # DEFAULT_NAME = $(firstword $(SRC_PROGRAMS:.c=))
 
 # Flags for compile and link
-ARCH    = -march=rv64im -mabi=lp64
+ARCH    = -march=rv64gcv -mabi=lp64
 ASFLAGS = $(ARCH)
-CFLAGS  = $(ARCH) -g -Og -I$$CS107E/include $$warn $$freestanding -fno-omit-frame-pointer -fstack-protector-strong -fstrict-volatile-bitfields -nostdlib
+CFLAGS  = $(ARCH) -g -Og -funroll-loops -ftree-vectorize -ffast-math -fstrict-aliasing -fschedule-insns2 -ftree-dse -I$$CS107E/include $$warn $$freestanding -fno-omit-frame-pointer -fstack-protector-strong -fstrict-volatile-bitfields -nostdlib
 LDFLAGS = -nostdlib -L$$CS107E/lib -T memmap.ld
-LDLIBS  = -lmango -lmango_gcc
+LDLIBS  = -lmango -lmango_gcc 
 OBJDUMP_FLAGS = -d --no-show-raw-insn --no-addresses --disassembler-color=terminal --visualize-jumps=color
 GDB_FLAGS= -q --command=$$CS107E/other/gdbsim.commands
 
@@ -47,8 +47,10 @@ SRC_C = doomgeneric_mango.c strings_extension.c malloc_extension.c ctype.c joybo
 		r_sky.c r_things.c sha1.c sounds.c statdump.c st_lib.c st_stuff.c s_sound.c\
 		tables.c v_video.c wi_stuff.c w_checksum.c w_file.c w_main.c w_wad.c \
 		z_zone.c w_file_stdc.c i_input.c i_video.c doomgeneric.c doomu_wad.c 
+
+SRC_S = float.s
 		
-OBJS := $(addprefix $(OBJDIR)/, $(notdir $(SRC_C:.c=.o)))
+OBJS := $(addprefix $(OBJDIR)/, $(notdir $(SRC_C:.c=.o))) $(addprefix $(OBJDIR)/, $(notdir $(SRC_S:.s=.o)))
 
 all: $(OUTPUT).bin
 
@@ -67,11 +69,9 @@ $(OBJDIR)/%.o: %.c
 	@mkdir -p $(OBJDIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# $(OBJDIR)/%.o: %.c | $(OBJDIR)
-# 	$(CC) $(CFLAGS) -c $< -o $@
-
-# $(OBJDIR):
-# 	mkdir -p $(OBJDIR)
+$(OBJDIR)/%.o: %.s
+	@mkdir -p $(OBJDIR)
+	$(CC) $(ASFLAGS) -c $< -o $@
 
 run: $(OUTPUT).bin
 # prevents duping elf and bin
@@ -85,31 +85,3 @@ clean:
 
 .PHONY: all run clean debug
 .PRECIOUS: %.elf %.o
-
-
-# all:	 $(OUTPUT)
-
-# clean:
-# 	rm -rf $(OBJDIR)
-# 	rm -f $(OUTPUT)
-# 	rm -f $(OUTPUT).gdb
-# 	rm -f $(OUTPUT).map
-
-# $(OUTPUT):	$(OBJS)
-# 	@echo [Linking $@]
-# 	$(VB)$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) \
-# 	-o $(OUTPUT) $(LDLIBS) -Wl,-Map,$(OUTPUT).map
-# 	@echo [Size]
-# 	-$(CROSS_COMPILE)size $(OUTPUT)
-
-# $(OBJS): | $(OBJDIR)
-
-# $(OBJDIR):
-# 	mkdir -p $(OBJDIR)
-
-# $(OBJDIR)/%.o:	%.c
-# 	@echo [Compiling $<]
-# 	$(VB)$(CC) $(CFLAGS) -c $< -o $@
-
-# print:
-# 	@echo OBJS: $(OBJS)

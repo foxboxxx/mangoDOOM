@@ -1535,7 +1535,7 @@ void D_DoomMain(void) {
     startskill = 5;
     startepisode = 1;
     startmap = 1;
-    // autostart = true;
+    // autostart = false;
     autostart = true;
 
     printf("CONFIG DEFAULT: startskill = sk_medium, startepisode = 1, startmap = 1, autostart = true\n");
