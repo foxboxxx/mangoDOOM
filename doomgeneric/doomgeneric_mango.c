@@ -2,12 +2,15 @@
 #include "doomkeys.h"
 #include "m_argv.h"
 
+#include "spi_led.c"
 #include "mango.h"
 #include "de.h"
 #include "gl.h"
 #include "hdmi.h"
 #include "i2c.h"
-#include "i2s.h"
+#include "dma.h"
+#include "spi.h"
+// #include "i2s.h"
 #include "printf.h"
 #include "spi.h"
 #include "string.h"
@@ -39,9 +42,9 @@ static unsigned char getDoomKey(void) {
     else if (jy > J_THRESH)  { return KEY_DOWNARROW; }
     else if (jy < -J_THRESH) { return KEY_UPARROW; }
     else if (button_read(BUTTON_A)) { return KEY_FIRE; }
-    else if (button_read(BUTTON_START)) { return KEY_ENTER; }
+    else if (button_read(BUTTON_START)) { return KEY_ESCAPE; }
     else if (button_read(BUTTON_X)) { return KEY_USE; }
-    else if (button_read(BUTTON_SELECT)) { return KEY_ESCAPE; }
+    else if (button_read(BUTTON_SELECT)) { return KEY_ENTER; }
     return 0;
 }
 
@@ -94,6 +97,10 @@ void DG_DrawFrame() {
 
     // direct set (fastest)
     de_set_active_framebuffer(DG_ScreenBuffer);
+    time_draw(75);
+    // send_cmd(CMD_RAM_WRITE);
+    // send_data_nb((void *)DG_ScreenBuffer, sizeof(DG_ScreenBuffer));
+
 
     // static int last = 0, curr = 0;
     // last = curr;
@@ -121,19 +128,32 @@ int DG_GetKey(int *pressed, unsigned char *doomKey) {
     static int count = 0;
     char c = getDoomKey();
 
-    if (c > 0 && (count <= 0 || c != prev_c)) {
-        *doomKey = c;
-        prev_c = c;  
-        *pressed = 1;
-        count = 1;
-        return 1;
-    }
-    else if (prev_c > 0 && count-- <= 0) {
-        *pressed = 0;
+    if (prev_c != 0 && c != prev_c) {
         *doomKey = prev_c;
         prev_c = 0;
+        *pressed = 0;
         return 1;
     }
+    else if (prev_c == 0 && c > 0) {
+        *doomKey = c;
+        prev_c = c;
+        *pressed = 1;
+        return 1;
+    }
+
+    // if (c > 0 && (count <= 0 || c != prev_c)) {
+    //     *doomKey = c;
+    //     prev_c = c;  
+    //     *pressed = 1;
+    //     count = 1;
+    //     return 1;
+    // }
+    // else if (prev_c > 0 && count-- <= 0) {
+    //     *pressed = 0;
+    //     *doomKey = prev_c;
+    //     prev_c = 0;
+    //     return 1;
+    // }
     return 0;
     // static int x = 0;
     // if (!x) {
@@ -149,20 +169,26 @@ int DG_GetKey(int *pressed, unsigned char *doomKey) {
 // Not needed
 void DG_SetWindowTitle(const char *title) { return; }
 
-int main(int argc, char **argv) {
+int main(void) {
+    dma_init();
+    spi_init();
+
+    const int WIDTH = 240, HEIGHT = 320;
+    ili9341_init(WIDTH, HEIGHT, 10);
+
     enable_fp();
     hdmi_resolution_id_t id = hdmi_best_match(DOOMGENERIC_RESX, DOOMGENERIC_RESY);
     hdmi_init(id);
     de_init(DOOMGENERIC_RESX, DOOMGENERIC_RESY, hdmi_get_screen_width(), hdmi_get_screen_height());
 
     uart_init();
-    uart_reinit_custom(0, 115200, GPIO_PF2, GPIO_PF4, GPIO_FN_ALT3); // custom re-init for sdcart uart
+    // uart_reinit_custom(0, 115200, GPIO_PF2, GPIO_PF4, GPIO_FN_ALT3); // custom re-init for sdcart uart
 
     joybonnet_init();
     timer_init();
     // gl_init(DOOMGENERIC_RESX, DOOMGENERIC_RESY, GL_DOUBLEBUFFER);
 
-    doomgeneric_Create(argc, argv);
+    doomgeneric_Create(0, NULL);
 
     for (int i = 0;; i++) {
         doomgeneric_Tick();

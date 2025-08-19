@@ -35,7 +35,7 @@ CFLAGS += -I$$CS107E/../extras/src -I./pseudo_include
 OBJDIR = build
 OUTPUT = doomgeneric
 
-SRC_C = doomgeneric_mango.c strings_extension.c malloc_extension.c ctype.c joybonnet.c i2c.c twi_driver.c\
+SRC_C = doomgeneric_mango.c strings_extension.c malloc_extension.c ctype.c joybonnet.c i2c.c twi_driver.c spi.c spi_driver.c dma.c spi_led.c \
 		dummy.c am_map.c doomdef.c doomstat.c dstrings.c d_event.c d_items.c d_iwad.c \
 		d_loop.c d_main.c d_mode.c d_net.c f_finale.c f_wipe.c g_game.c hu_lib.c \
 		hu_stuff.c info.c i_cdmus.c i_endoom.c i_joystick.c i_scale.c i_sound.c i_system.c \

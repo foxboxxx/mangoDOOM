@@ -48,7 +48,7 @@ rcsid[] = "$Id: i_x.c,v 1.6 1997/02/03 22:45:10 b1 Exp $";
 
 #include <sys/types.h>
 
-//#define CMAP256
+// #define CMAP256
 
 struct FB_BitField
 {
@@ -371,10 +371,10 @@ void I_FinishUpdate (void)
                     }
                 }
             }
+            cmap_to_rgb565((void*)line_out, (void*)line_in, SCREENWIDTH);
 #else
-            //cmap_to_rgb565((void*)line_out, (void*)line_in, SCREENWIDTH);
-#endif
             cmap_to_fb((void*)line_out, (void*)line_in, SCREENWIDTH);
+#endif
             line_out += (SCREENWIDTH * fb_scaling * (s_Fb.bits_per_pixel/8)) + x_offset_end;
         }
         line_in += SCREENWIDTH;

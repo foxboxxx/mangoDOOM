@@ -4,8 +4,11 @@
 #include "malloc.h"
 #include "ctype.h"
 #include "uart.h"
+#include "backtrace.h"
 
 int strcasecmp(const char *s1, const char *s2) {
+    printf("in strcasecmp %p %p\n", s1, s2);
+    backtrace_print();
     while (*s1 && *s2) {
         char c1 = *s1++;
         char c2 = *s2++;

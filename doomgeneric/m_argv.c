@@ -42,6 +42,7 @@ char**		myargv;
 
 int M_CheckParmWithArgs(char *check, int num_args)
 {
+    return 0;
     int i;
 
     for (i = 1; i < myargc - num_args; i++)

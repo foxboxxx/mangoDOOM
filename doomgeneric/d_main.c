@@ -529,7 +529,7 @@ void D_DoAdvanceDemo(void) {
         if (gamemode == commercial)
             pagetic = TICRATE * 11;
         else
-            pagetic = 170;
+            pagetic = 6000;
         gamestate = GS_DEMOSCREEN;
         pagename = DEH_String("TITLEPIC");
         if (gamemode == commercial)
@@ -1146,7 +1146,7 @@ void D_DoomMain(void) {
     //
     printf("Config: nomonsters false\n");
     // nomonsters = M_CheckParm ("-nomonsters");
-    nomonsters = 1;
+    nomonsters = 0;
 
     //!
     // @vanilla
@@ -1378,6 +1378,7 @@ void D_DoomMain(void) {
     //
 
     // p = M_CheckParmWithArgs ("-playdemo", 1);
+    p = 0;
 
     if (!p) {
         //!
@@ -1536,9 +1537,9 @@ void D_DoomMain(void) {
     startepisode = 1;
     startmap = 1;
     // autostart = false;
-    autostart = true;
+    autostart = false;
 
-    printf("CONFIG DEFAULT: startskill = sk_medium, startepisode = 1, startmap = 1, autostart = true\n");
+    printf("CONFIG DEFAULT: startskill = %d, startepisode = %d, startmap = %d, autostart = %d\n", startskill, startepisode, startmap, autostart);
 
     //!
     // @arg <skill>
@@ -1708,6 +1709,7 @@ void D_DoomMain(void) {
     // if (gamemode == commercial && W_CheckNumForName("map01") < 0) {
     //     storedemo = true;
     // }
+    storedemo = false;
 
     // if (M_CheckParmWithArgs("-statdump", 1))
     // {
