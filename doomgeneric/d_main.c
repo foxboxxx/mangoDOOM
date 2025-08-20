@@ -73,9 +73,9 @@
 
 #include "d_main.h"
 
-// #include "doom_wad.h"
+#include "doom_wad.h"
 // #include "doom1_wad.h"
-#include "doomu_wad.h"
+// #include "doomu_wad.h"
 
 //
 // D-DoomLoop()

@@ -43,27 +43,23 @@ void DG_Init() {
 }
 
 void DG_DrawFrame() {
-    // direct set (fastest)
-    de_set_active_framebuffer(DG_ScreenBuffer);
+    // RGBA8888 ON HDMI
+    if (SCREEN_MODE == RGBA8888) {
+        // de_set_active_framebuffer(DG_ScreenBuffer);
+    }
 
-    uint16_t *flex = (uint16_t*)DG_ScreenBuffer;
+    // RGB565 ON SPI_LCD
+    else if (SCREEN_MODE == RGB565) {
+        uint16_t *flex = (uint16_t*)DG_ScreenBuffer;
+        set_window(0, 20, DOOMGENERIC_RESX, DOOMGENERIC_RESY - 20);
+        const static uint8_t mad = 0b01100000;
+        send_cmd(CMD_MAD_CTRL); 
+        send_data(&mad, 1);
+        refresh_screen(75);
+        send_cmd(CMD_RAM_WRITE);
+        send_data((void *)flex, DOOMGENERIC_RESX * DOOMGENERIC_RESY * 2 - (DOOMGENERIC_RESX * 80));
+    }
 
-    // uint16_t temp[DOOMGENERIC_RESX * DOOMGENERIC_RESY];
-    // for (int i = 0; i < DOOMGENERIC_RESX; i++) {
-    //     for (int j = 0; j < DOOMGENERIC_RESY; j++) {
-    //         temp[i * DOOMGENERIC_RESY + j] = flex[(DOOMGENERIC_RESY - j - 1) * DOOMGENERIC_RESX + i];
-    //     }
-    // }
-    // time_draw(75);
-    set_window(0, 0, DOOMGENERIC_RESX, DOOMGENERIC_RESY);
-    const static uint8_t mad = 0b01100000;
-    send_cmd(CMD_MAD_CTRL); 
-    send_data(&mad, 1);
-    refresh_screen(75);
-    
-    send_cmd(CMD_RAM_WRITE);
-    send_data((void *)flex, DOOMGENERIC_RESX * DOOMGENERIC_RESY * 2);
-    // while (!spi_transfer_completed(module.spi_dev)) {}
     return;
 }
 
@@ -102,23 +98,26 @@ int DG_GetKey(int *pressed, unsigned char *doomKey) {
 void DG_SetWindowTitle(const char *title) { return; }
 
 int main(void) {
-    dma_init();
-    spi_init();
-
-    ili9341_init(DOOMGENERIC_RESX, DOOMGENERIC_RESX, 10);
-
     enable_fp();
-    hdmi_resolution_id_t id = hdmi_best_match(DOOMGENERIC_RESX, DOOMGENERIC_RESY);
-    hdmi_init(id);
-    de_init(DOOMGENERIC_RESX, DOOMGENERIC_RESY, hdmi_get_screen_width(), hdmi_get_screen_height());
-
     uart_init();
     // uart_reinit_custom(0, 115200, GPIO_PF2, GPIO_PF4, GPIO_FN_ALT3); // custom re-init for sdcart uart
-
+    dma_init();
+    spi_init();
     joybonnet_init();
     timer_init();
-    // test_rotate();
+
+
+    if (SCREEN_MODE == RGB565) ili9341_init(DOOMGENERIC_RESX, DOOMGENERIC_RESX, 10);
+
+    else if (SCREEN_MODE == RGBA8888) {
+        hdmi_resolution_id_t id = hdmi_best_match(DOOMGENERIC_RESX, DOOMGENERIC_RESY);
+        hdmi_init(id);
+        de_init(DOOMGENERIC_RESX, DOOMGENERIC_RESY, hdmi_get_screen_width(), hdmi_get_screen_height());
+    }
+
     doomgeneric_Create(0, NULL);
+    de_set_active_framebuffer(DG_ScreenBuffer);
+
 
     for (int i = 0;; i++) {
         doomgeneric_Tick();

@@ -4,12 +4,23 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#define RGBA8888 0
+#define RGB565 1
+
+#ifndef SCREEN_MODE
+#define SCREEN_MODE RGBA8888
+#endif
+
 #ifndef DOOMGENERIC_RESX
 #define DOOMGENERIC_RESX 320
 #endif  // DOOMGENERIC_RESX
 
 #ifndef DOOMGENERIC_RESY
-#define DOOMGENERIC_RESY 240
+  #if SCREEN_MODE == RGBA8888
+    #define DOOMGENERIC_RESY 200
+  #elif SCREEN_MODE == RGB565
+    #define DOOMGENERIC_RESY 240
+  #endif
 #endif  // DOOMGENERIC_RESY
 
 

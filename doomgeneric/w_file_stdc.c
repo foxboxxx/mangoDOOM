@@ -22,9 +22,9 @@
 #include "w_file.h"
 #include "z_zone.h"
 
-// #include "doom_wad.h"
+#include "doom_wad.h"
 // #include "doom1_wad.h"
-#include "doomu_wad.h"
+// #include "doomu_wad.h"
 
 typedef struct
 {

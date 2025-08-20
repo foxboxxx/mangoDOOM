@@ -20,7 +20,7 @@ CROSS_COMPILE = riscv64-unknown-elf-
 # Flags for compile and link
 ARCH    = -march=rv64gcv -mabi=lp64
 ASFLAGS = $(ARCH)
-CFLAGS  = $(ARCH) -g -Og -funroll-loops -ftree-vectorize -ffast-math -fstrict-aliasing -fschedule-insns2 -ftree-dse -I$$CS107E/include $$warn $$freestanding -fno-omit-frame-pointer -fstack-protector-strong -fstrict-volatile-bitfields -nostdlib
+CFLAGS  = $(ARCH) -g -Og -fmove-loop-invariants -finline-functions -finline-small-functions -fpartial-inlining -ftree-loop-vectorize -funroll-loops -ftree-vectorize -ffast-math -fstrict-aliasing -fschedule-insns2 -ftree-dse -I$$CS107E/include $$warn $$freestanding -fno-omit-frame-pointer -fstack-protector-strong -fstrict-volatile-bitfields -nostdlib
 LDFLAGS = -nostdlib -L$$CS107E/lib -T memmap.ld
 LDLIBS  = -lmango -lmango_gcc 
 OBJDUMP_FLAGS = -d --no-show-raw-insn --no-addresses --disassembler-color=terminal --visualize-jumps=color
@@ -35,7 +35,7 @@ CFLAGS += -I$$CS107E/../extras/src -I./pseudo_include
 OBJDIR = build
 OUTPUT = doomgeneric
 
-SRC_C = doomgeneric_mango.c strings_extension.c malloc_extension.c ctype.c joybonnet.c i2c.c twi_driver.c spi.c spi_driver.c dma.c spi_lcd.c \
+SRC_C = doomgeneric_mango.c strings_extension.c malloc_extension.c ctype.c joybonnet.c i2s.o i2c.c twi_driver.c spi.c spi_driver.c dma.c spi_lcd.c \
 		dummy.c am_map.c doomdef.c doomstat.c dstrings.c d_event.c d_items.c d_iwad.c \
 		d_loop.c d_main.c d_mode.c d_net.c f_finale.c f_wipe.c g_game.c hu_lib.c \
 		hu_stuff.c info.c i_cdmus.c i_endoom.c i_joystick.c i_scale.c i_sound.c i_system.c \
@@ -46,7 +46,7 @@ SRC_C = doomgeneric_mango.c strings_extension.c malloc_extension.c ctype.c joybo
 		p_tick.c p_user.c r_bsp.c r_data.c r_draw.c r_main.c r_plane.c r_segs.c \
 		r_sky.c r_things.c sha1.c sounds.c statdump.c st_lib.c st_stuff.c s_sound.c\
 		tables.c v_video.c wi_stuff.c w_checksum.c w_file.c w_main.c w_wad.c \
-		z_zone.c w_file_stdc.c i_input.c i_video.c doomgeneric.c doomu_wad.c 
+		z_zone.c w_file_stdc.c i_input.c i_video.c doomgeneric.c doom_wad.c 
 
 SRC_S = float.s
 		

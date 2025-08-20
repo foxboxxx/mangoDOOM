@@ -1593,8 +1593,19 @@ static void WI_loadUnloadData(load_callback_t callback)
 		    if (wbs->epsd != 1 || j != 8)
 		    {
 			// animations
-			DEH_snprintf(name, 9, "WIA%d%.2d%.2d", wbs->epsd, j, i);
-                        callback(name, &a->p[i]);
+			// fix for different printf - jmr
+			
+			char i_s[3];
+			i_s[0] = i < 10 ? 0 + '0' : i / 10 + '0';
+			i_s[1] = i % 10 + '0';
+			i_s[2] = '\0';
+			char j_s[3];
+			j_s[0] = j < 10 ? 0 + '0' : j / 10 + '0';
+			j_s[1] = j % 10 + '0';
+			j_s[2] = '\0';
+
+			DEH_snprintf(name, 9, "WIA%d%s%s", wbs->epsd, j_s, i_s);
+            callback(name, &a->p[i]);
 		    }
 		    else
 		    {
