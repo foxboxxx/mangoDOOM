@@ -141,10 +141,20 @@ void cmap_to_rgb565(uint16_t * out, uint8_t * in, int in_pixels)
     for (i = 0; i < in_pixels; i++)
     {
         c = colors[*in]; 
-        r = ((uint16_t)(c.r >> 3)) << 11;
-        g = ((uint16_t)(c.g >> 2)) << 5;
-        b = ((uint16_t)(c.b >> 3)) << 0;
-        *out = (r | g | b);
+        r = ((uint16_t)(c.r >> 3)) << 3;
+        // g = ((uint16_t)(c.g >> 2)) << 5;
+        uint16_t g_hi = (((uint16_t)(c.g >> 5)) & 0b111);
+        uint16_t g_lo = ((uint16_t)(c.g >> 2) & 0b111) << 13;
+        b = ((uint16_t)(c.b >> 3)) << 8;
+
+        // r = ((uint16_t)(c.r >> 2)) << 5;
+        // g = ((uint16_t)(c.g >> 3)) << 0;
+        // b = ((uint16_t)(c.b >> 3)) << 11;
+
+        // r = 0b000000 << 5;
+        // g = 0b11111 << 0;
+        // b = 0b00000 << 11;
+        *out = (r | g_lo | g_hi | b);
 
         in++;
         for (j = 0; j < fb_scaling; j++) {
@@ -230,7 +240,8 @@ void I_InitGraphics (void)
 	// else {
 		// default to rgba8888 like the old behavior, for compatibility
 		// maybe could warn here?
-		mode = "rgba8888";
+        mode = "rgb565";
+		// mode = "rgba8888";
 	// }
 
 	if (strcmp(mode, "rgba8888") == 0) {
@@ -371,9 +382,9 @@ void I_FinishUpdate (void)
                     }
                 }
             }
-            cmap_to_rgb565((void*)line_out, (void*)line_in, SCREENWIDTH);
 #else
-            cmap_to_fb((void*)line_out, (void*)line_in, SCREENWIDTH);
+            cmap_to_rgb565((void*)line_out, (void*)line_in, SCREENWIDTH);
+            // cmap_to_fb((void*)line_out, (void*)line_in, SCREENWIDTH);
 #endif
             line_out += (SCREENWIDTH * fb_scaling * (s_Fb.bits_per_pixel/8)) + x_offset_end;
         }
@@ -402,18 +413,16 @@ void I_ReadScreen (byte* scr)
 void I_SetPalette (byte* palette)
 {
 	int i;
-	//col_t* c;
+	col_t* c;
 
-	//for (i = 0; i < 256; i++)
-	//{
-	//	c = (col_t*)palette;
-
-	//	rgb565_palette[i] = GFX_RGB565(gammatable[usegamma][c->r],
-	//								   gammatable[usegamma][c->g],
-	//								   gammatable[usegamma][c->b]);
-
-	//	palette += 3;
-	//}
+	for (i = 0; i < 256; i++)
+	{
+		c = (col_t*)palette;
+		rgb565_palette[i] = GFX_RGB565(gammatable[usegamma][c->r],
+									   gammatable[usegamma][c->g],
+									   gammatable[usegamma][c->b]);
+		palette += 3;
+	}
     
 
     /* performance boost:
