@@ -7,8 +7,13 @@
 
 pixel_t* DG_ScreenBuffer = NULL;
 
+int screen_mode = 0;
+int DOOMGENERIC_RESX = 320;
+int DOOMGENERIC_RESY = 200;
+
 void M_FindResponseFile(void);
 void D_DoomMain (void);
+
 
 
 void doomgeneric_Create(int argc, char **argv)

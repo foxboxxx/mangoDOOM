@@ -9,12 +9,13 @@
 #include "i2c.h"
 #include "dma.h"
 #include "spi.h"
-// #include "i2s.h"
+#include "i2s.h"
 #include "printf.h"
 #include "spi.h"
 #include "string.h"
 #include "timer.h"
 #include "uart.h"
+#include "doom_theme.h"
 void uart_reinit_custom(int, int, gpio_id_t, gpio_id_t, unsigned int);
 
 #include "spi_lcd.h"
@@ -44,12 +45,12 @@ void DG_Init() {
 
 void DG_DrawFrame() {
     // RGBA8888 ON HDMI
-    if (SCREEN_MODE == RGBA8888) {
-        // de_set_active_framebuffer(DG_ScreenBuffer);
+    if (screen_mode == RGBA8888) {
+        de_set_active_framebuffer(DG_ScreenBuffer);
     }
 
     // RGB565 ON SPI_LCD
-    else if (SCREEN_MODE == RGB565) {
+    else if (screen_mode == RGB565) {
         uint16_t *flex = (uint16_t*)DG_ScreenBuffer;
         set_window(0, 20, DOOMGENERIC_RESX, DOOMGENERIC_RESY - 20);
         const static uint8_t mad = 0b01100000;
@@ -59,6 +60,8 @@ void DG_DrawFrame() {
         send_cmd(CMD_RAM_WRITE);
         send_data((void *)flex, DOOMGENERIC_RESX * DOOMGENERIC_RESY * 2 - (DOOMGENERIC_RESX * 80));
     }
+
+    printf("SCREENMODE:%d\n", screen_mode);
 
     return;
 }
@@ -97,30 +100,53 @@ int DG_GetKey(int *pressed, unsigned char *doomKey) {
 // Not needed
 void DG_SetWindowTitle(const char *title) { return; }
 
+static bool hdmi_plug_is_connected(void) {
+    const uint8_t HOT_PLUG_DETECT = 1 << 1;
+    uint8_t *phy_stat = (void *)(0x5500000 + 0x3004);
+    return (*phy_stat & HOT_PLUG_DETECT) != 0;
+}
+
 int main(void) {
     enable_fp();
     uart_init();
     // uart_reinit_custom(0, 115200, GPIO_PF2, GPIO_PF4, GPIO_FN_ALT3); // custom re-init for sdcart uart
-    dma_init();
-    spi_init();
-    joybonnet_init();
     timer_init();
 
+    dma_init();
+    spi_init();
+    i2s_init(gwav->frames_per_sec);
+    i2s_frame_type_t ftype = (gwav->samples_per_frame == 1) ? I2S_MONO : I2S_STEREO;
+    joybonnet_init();
 
-    if (SCREEN_MODE == RGB565) ili9341_init(DOOMGENERIC_RESX, DOOMGENERIC_RESX, 10);
 
-    else if (SCREEN_MODE == RGBA8888) {
-        hdmi_resolution_id_t id = hdmi_best_match(DOOMGENERIC_RESX, DOOMGENERIC_RESY);
-        hdmi_init(id);
-        de_init(DOOMGENERIC_RESX, DOOMGENERIC_RESY, hdmi_get_screen_width(), hdmi_get_screen_height());
-    }
+    // if (SCREEN_MODE == RGB565) {
+    ili9341_init(DOOMGENERIC_RESX, DOOMGENERIC_RESY_LCD, 10);
+    // }
+
+    // else if (SCREEN_MODE == RGBA8888) {
+    hdmi_resolution_id_t id = hdmi_best_match(DOOMGENERIC_RESX, DOOMGENERIC_RESY_HDMI);
+    hdmi_init(id);
+    de_init(DOOMGENERIC_RESX, DOOMGENERIC_RESY_HDMI, hdmi_get_screen_width(), hdmi_get_screen_height());
+    // }
 
     doomgeneric_Create(0, NULL);
-    de_set_active_framebuffer(DG_ScreenBuffer);
-
+    i2s_stream_playback_nb(gwav->data, gwav->n_data, ftype);
 
     for (int i = 0;; i++) {
+        if (hdmi_plug_is_connected() && screen_mode != RGBA8888) {
+            screen_mode = RGBA8888;
+            DOOMGENERIC_RESY = DOOMGENERIC_RESY_HDMI;
+            make_black();
+        } 
+        else if (!hdmi_plug_is_connected() && screen_mode == RGBA8888) {
+            make_black();
+            screen_mode = RGB565;
+        }
+        else {
+            DOOMGENERIC_RESY = DOOMGENERIC_RESY_LCD;
+        }
         doomgeneric_Tick();
+        if (i2s_transfer_completed()) i2s_stream_playback_nb(gwav->data, gwav->n_data, ftype);
     }
 
     return 0;

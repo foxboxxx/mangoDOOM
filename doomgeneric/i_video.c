@@ -243,7 +243,7 @@ void I_InitGraphics (void)
         // mode = "rgb565";
 		// mode = "rgba8888";
 	// }
-    mode = SCREEN_MODE == RGBA8888 ? "rgba8888" : "rgb565";
+    mode = screen_mode == RGBA8888 ? "rgba8888" : "rgb565";
 
 	if (strcmp(mode, "rgba8888") == 0) {
 		// default mode
@@ -384,8 +384,8 @@ void I_FinishUpdate (void)
                 }
             }
 #else
-            if (SCREEN_MODE == RGB565) cmap_to_rgb565((void*)line_out, (void*)line_in, SCREENWIDTH);
-            else if (SCREEN_MODE == RGBA8888) cmap_to_fb((void*)line_out, (void*)line_in, SCREENWIDTH);
+            if (screen_mode == RGB565) cmap_to_rgb565((void*)line_out, (void*)line_in, SCREENWIDTH);
+            else if (screen_mode == RGBA8888) cmap_to_fb((void*)line_out, (void*)line_in, SCREENWIDTH);
 #endif
             line_out += (SCREENWIDTH * fb_scaling * (s_Fb.bits_per_pixel/8)) + x_offset_end;
         }

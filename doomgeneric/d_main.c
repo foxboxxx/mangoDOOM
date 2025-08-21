@@ -19,6 +19,8 @@
 //	and call the startup functions.
 //
 
+#include "screen_controls.h"
+
 #include "ctype.h"
 #include "string.h" // #include <string.h>
 #include <stdio.h>
@@ -411,6 +413,15 @@ boolean D_GrabMouseCallback(void) {
 }
 
 void doomgeneric_Tick() {
+    static int last_mode = 0;
+    if (screen_mode != last_mode) {
+        I_ShutdownGraphics();
+        I_InitGraphics();
+        V_RestoreBuffer();
+        R_ExecuteSetViewSize();
+        ST_doRefresh();
+        last_mode = screen_mode;
+    }
         // printf("I_GetTime() = %d\n", I_GetTime());
     // frame syncronous IO operations
     I_StartFrame();
@@ -453,7 +464,7 @@ void D_DoomLoop(void) {
     I_SetGrabMouseCallback(D_GrabMouseCallback);
     I_InitGraphics();
 
-        I_SetPalette(W_CacheLumpName(DEH_String("PLAYPAL"), PU_CACHE));
+        // I_SetPalette(W_CacheLumpName(DEH_String("PLAYPAL"), PU_CACHE));
 
     I_EnableLoadingDisk();
 
