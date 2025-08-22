@@ -1,6 +1,7 @@
 #include <stddef.h>
 #pragma once
 
+// Replacement for standard string.h lib
 int strcasecmp(const char *s1, const char *s2);
 
 int strncasecmp(const char *s1, const char *s2, unsigned long n);

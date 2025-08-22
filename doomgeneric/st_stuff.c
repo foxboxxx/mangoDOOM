@@ -1026,6 +1026,10 @@ void ST_drawWidgets(boolean refresh)
 
 }
 
+void ST_doSoftRefresh(void) {
+    st_firsttime = true;
+}
+
 void ST_doRefresh(void)
 {
 

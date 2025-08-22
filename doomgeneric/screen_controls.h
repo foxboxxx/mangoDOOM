@@ -1,6 +1,6 @@
 #pragma once
 
-#ifndef SCREEN_CONTROLS_H // Good practice: add include guards
+#ifndef SCREEN_CONTROLS_H
 #define SCREEN_CONTROLS_H
 
 extern int screen_mode;

@@ -419,7 +419,7 @@ void doomgeneric_Tick() {
         I_InitGraphics();
         V_RestoreBuffer();
         R_ExecuteSetViewSize();
-        ST_doRefresh();
+        ST_doSoftRefresh();
         last_mode = screen_mode;
     }
         // printf("I_GetTime() = %d\n", I_GetTime());
@@ -1210,8 +1210,7 @@ void D_DoomMain(void) {
     // if (M_CheckParm ("-altdeath"))
     // deathmatch = 2;
 
-    if (devparm)
-        DEH_printf(D_DEVSTR);
+    if (devparm) DEH_printf(D_DEVSTR);
 
     // find which dir to use for config files
 
@@ -1391,7 +1390,7 @@ void D_DoomMain(void) {
     // p = M_CheckParmWithArgs ("-playdemo", 1);
     p = 0;
 
-    if (!p) {
+    // if (!p) {
         //!
         // @arg <demo>
         // @category demo
@@ -1401,9 +1400,9 @@ void D_DoomMain(void) {
         // of the screen.
         //
         // p = M_CheckParmWithArgs("-timedemo", 1);
-    }
+    // }
 
-    if (p) {
+    // if (p) {
         // // With Vanilla you have to specify the file without extension,
         // // but make that optional.
         // if (M_StringEndsWith(myargv[p + 1], ".lmp"))
@@ -1430,7 +1429,7 @@ void D_DoomMain(void) {
         // }
 
         // printf("Playing demo %s.\n", file);
-    }
+    // }
 
     I_AtExit((atexit_func_t)G_CheckDemoStatus, true);
 
@@ -1615,11 +1614,11 @@ void D_DoomMain(void) {
     // printf("Config: avg\n");
     // p = M_CheckParm ("-avg");
 
-    if (true) // p
-    {
-        timelimit = 20;
-        printf("Config: timelimit = %d\n", timelimit);
-    }
+    // if (true) // p
+    // {
+    timelimit = 20;
+    printf("Config: timelimit = %d\n", timelimit);
+    // }
 
     //!
     // @arg [<x> <y> | <xy>]
@@ -1629,7 +1628,7 @@ void D_DoomMain(void) {
     // (Doom 2)
     //
 
-    printf("Config: warp\n");
+    // printf("Config: warp\n");
     // p = M_CheckParmWithArgs("-warp", 1);
 
     // if (p)
@@ -1655,7 +1654,7 @@ void D_DoomMain(void) {
     // Undocumented:
     // Invoked by setup to test the controls.
 
-    printf("Config: testcontrols\n");
+    // printf("Config: testcontrols\n");
     // p = M_CheckParm("-testcontrols");
 
     // if (p > 0)
@@ -1770,10 +1769,10 @@ void D_DoomMain(void) {
     if (gameaction != ga_loadgame) {
         if (autostart || netgame) {
             G_InitNew(startskill, startepisode, startmap);
-            printf("G Inited\n");
+            // printf("G Inited\n");
         } else {
             D_StartTitle(); // start up intro loop
-            printf("In intro loop\n");
+            // printf("In intro loop\n");
         }
     }
 

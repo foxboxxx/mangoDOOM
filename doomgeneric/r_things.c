@@ -127,7 +127,7 @@ void R_InstallSpriteLump(int lump, unsigned frame, unsigned rotation, boolean fl
 	return;
     }
 	
-    //TODO: LOOK AT THIS LATER I JUST COMMENTED IT OUT
+    //TODO: LOOK AT THIS LATER I JUST COMMENTED IT OUT --> looked at later... issue due to bool stuff, check: https://blog.svgames.pl/article/the-little-bool-of-doom
     // the lump is only used for one rotation
     if (sprtemp[frame].rotate == false)
 	I_Error ("R_InitSprites: Sprite %s frame %c has rotations "

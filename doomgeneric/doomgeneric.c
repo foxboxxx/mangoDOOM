@@ -7,14 +7,13 @@
 
 pixel_t* DG_ScreenBuffer = NULL;
 
-int screen_mode = 0;
+// Initial screen states - assume SPI LCD and switch only if HDMI is found
+int screen_mode = RGB565;
 int DOOMGENERIC_RESX = 320;
-int DOOMGENERIC_RESY = 200;
+int DOOMGENERIC_RESY = DOOMGENERIC_RESY_LCD;
 
 void M_FindResponseFile(void);
 void D_DoomMain (void);
-
-
 
 void doomgeneric_Create(int argc, char **argv)
 {

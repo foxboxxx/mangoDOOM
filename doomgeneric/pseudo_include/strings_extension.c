@@ -74,7 +74,6 @@ char *strdup(const char *s) {
 
     #undef memcpy
     memcpy(duped, s, size);
-    // duped[size] = '\0';
     return duped;
 }
 
@@ -124,9 +123,8 @@ int puts(const char *s) {
     return ret;
 }
 
+// MangoPi unique implementation via uart
 int putchar(int ch) {
-    // printf("%c\n", ch);
-    // return ch;
     return uart_putchar(ch);
 }
 

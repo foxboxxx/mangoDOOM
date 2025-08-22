@@ -51,6 +51,9 @@ void ST_Start (void);
 // Called by startup code.
 void ST_Init (void);
 
+// Refresh status bar state for switching displays
+void ST_doSoftRefresh(void);
+
 
 
 // States for status bar code.

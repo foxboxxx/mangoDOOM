@@ -2,8 +2,9 @@
 // This is for 240x320 LCD using ili9341 driver
 // juliez summer 2025
 
-// daniel spi code
+// daniel spi lcd code
 #include "spi_lcd.h"
+#include "malloc.h"
 #include "string.h"
 
 static struct {
@@ -48,10 +49,14 @@ void set_window(uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
 }
 
 void make_black(void) {
-    uint16_t fb[module.width * module.height];
-    memset(fb, 0x0, module.width * module.height * 2);
+    static uint8_t *fb = NULL;
+    if (fb == NULL) {
+        fb = malloc(module.width * module.height * 2);
+        memset(fb, 0x0, module.width * module.height * 2);
+    }
+    set_window(0, 0, module.width, module.height);
     send_cmd(CMD_RAM_WRITE);
-    send_data((void *)fb, sizeof(fb));
+    send_data((void *)fb, module.width * module.height * 2);
 }
 
 void ili9341_init(int width, int height, int mhz) {
@@ -62,7 +67,7 @@ void ili9341_init(int width, int height, int mhz) {
     //send_cmd(CMD_SW_RESET); // not needed, tie reset pin to 3.3v header will hardware reset with Pi
     send_cmd(CMD_COLOR_MODE_SET);
     send_data((uint8_t []){COLOR_MODE_RGB565}, 1);
-    set_window(0, 0, module.width, module.height); // not needed?
+    // set_window(0, 0, module.width, module.height); // not needed?
     send_cmd(CMD_SLEEP_OUT);
     send_cmd(CMD_DISPLAY_ON);
     // set screen to black
