@@ -1,4 +1,4 @@
-# DOOM Ultimate Bare Metal Port onto RISC-V MangoPi via doomgeneric fork
+# DOOM 1993 Bare Metal Port onto RISC-V MangoPi
 
 This is a bare metal port of the original 1993 DOOM video game onto the MangoPi board (model MPi-MQ1PH). The primary backend dependecies (i.e. C libaries) aren't publicly available as they are content for Stanford's CS107E course. However, many additional functions were implemented and added to the repo via the `pseudo_includes` folder. Due to the bare metal nature of the port, all file/system calls were removed and replaced with memory calls to a C-array storing the original DOOM's `.wad` file. Thus, since there is no SD card support outside of bootloading off of it, games are unable to be saved/loaded each time the MangoPi turns on. 
 
