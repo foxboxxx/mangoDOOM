@@ -5,7 +5,7 @@ This is a bare metal port of the original 1993 DOOM video game onto the MangoPi 
 The main purpose of the port is to display the MangoPi's various protocol support (and of course to show that DOOM can run on anything...). The port utilizes an I2C Adafruit Joy Bonnet for joystick and button input, an SPI  LCD display for video output, and an I2S mono speaker to play the DOOM soundtrack on loop (no native game sound support). In addition to the SPI LCD, there is a "Nintendo Switch"-esque feature where if an HDMI cable is plugged into the MangoPi, it will automatically switch display outputs from the SPI LCD to whatever monitor it is connected to.
 
 ## Media
-![Main Screen](screenshots/mango_main_screen.png)
-![Device Off](screenshots/mango_off.png)
-![Device Mobile](screenshots/mango_mobile.png)
-![Device Docked](screenshots/mango_docked.png)
+![Main Screen](screenshots/mango_main_screen.jpeg)
+![Device Off](screenshots/mango_off.jpeg)
+![Device Mobile](screenshots/mango_mobile.jpeg)
+![Device Docked](screenshots/mango_docked.jpeg)
