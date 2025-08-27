@@ -94,7 +94,6 @@ int		ticdup;
 fixed_t         offsetms;
 
 // Use new client syncronisation code
-//TODO: CHANGE BACK TO TRUE LATER?
 static boolean  new_sync = true;
 
 // Callback functions for loop code.
